@@ -8,4 +8,4 @@ inoremap /sth S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_
 inoremap /ssh S_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
 inoremap /eh  E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
 
-inoremap /ls S_/;T_/;A_/;R_/;T_/;L_/;I_/;N_/;K_/;
+inoremap /link L_/;I_/;N_/;K_/;URL_GOES_HEREL_/;I_/;N_/;K_/;TITLE_GOES_HEREL_/;I_/;N_/;K_/;

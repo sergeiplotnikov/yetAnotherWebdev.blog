@@ -1,4 +1,4 @@
-.TH "yet_another_webdev" "blog" "" "yet_another_webdev(blog)" "YAWDB_SET_POST_DATE"
+.TH "yet_another_webdev" "blog" "" "yet_another_webdev(blog)" "PUBLISH_DATE"
 .nh
 .SH "PROJECT"
 Understanding ECMAScript 6
@@ -339,10 +339,10 @@ false
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 .SS ""
 .PP
-While running S_/;T_/;A_/;R_/;T_/;I_/;N_/;F_/;O_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;the script E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;above does not demonstarte the described behavior,
-because you get false, running the same code S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;inside Node REPL will return TRUE.
-The reason for this is E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;the fact that code from a script S_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;runs inside a module
-while REPL E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;runs 'global'.
+While running the script above does not demonstarte the described behavior,
+because you get false, running the same code inside Node REPL will return TRUE.
+The reason for this is the fact that code from a script runs inside a module
+while REPL runs 'global'.
 .SY
 Based on: https://stackoverflow.com/questions/20861049/this-different-between-repl-and-script
 .YS

@@ -1,19 +1,18 @@
-.TH "yet_another_webdev" "blog" "" "yet_another_webdev(blog)" "YAWDB_SET_POST_DATE"
+.TH "yet_another_webdev" "blog" "" "yet_another_webdev(blog)" "PUBLISH_DATE"
 .nh
 .SH "PROJECT"
 Introduction to FPGA
 .SH "POST"
 Video 3 - Simplest example
 .SH "DESCRIPTION"
-Using video #3 in the series to create an even simpler example, with a simpler
-verilog file
+Using video #3 in the series to create an even simpler example, with a simpler verilog file
 .SH "Sources"
 .SS "Introduction to FPGA Part 3 - Getting started with Verilog
 .PP
-S_/;T_/;A_/;R_/;T_/;L_/;I_/;N_/;K_/;https://www.youtube.com/watch?v=A4VfBoP4Hdk
+L_/;I_/;N_/;K_/;https://www.youtube.com/watch?v=A4VfBoP4HdkL_/;I_/;N_/;K_/;https://www.youtube.com/watch?v=A4VfBoP4HdkL_/;I_/;N_/;K_/;
 .SS "ICEstick User Manual"
 .PP
-S_/;T_/;A_/;R_/;T_/;L_/;I_/;N_/;K_/;https://www.latticesemi.com/view_document?document_id=50701
+L_/;I_/;N_/;K_/;https://www.latticesemi.com/view_document?document_id=50701L_/;I_/;N_/;K_/;https://www.latticesemi.com/view_document?document_id=50701L_/;I_/;N_/;K_/;
 .sp 3
 .SH "PMOD layout"
 .PP
@@ -46,7 +45,7 @@ set_io                led_grn   95
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 .SS "Link to complete source file:"
 .PP
-S_/;T_/;A_/;R_/;T_/;L_/;I_/;N_/;K_/;http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.pcf
+L_/;I_/;N_/;K_/;http://soydev.lol/source/fpga_intro/220115_video_03/olob/olob.pcfL_/;I_/;N_/;K_/;http://soydev.lol/source/fpga_intro/220115_video_03/olob/olob.pcfL_/;I_/;N_/;K_/;?
 .sp
 .RS -20
 .nf
@@ -60,7 +59,7 @@ endmodule
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 .SS "Link to complete source file:"
 .PP
-S_/;T_/;A_/;R_/;T_/;L_/;I_/;N_/;K_/;http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.v
+L_/;I_/;N_/;K_/;http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.vL_/;I_/;N_/;K_/;http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.vL_/;I_/;N_/;K_/;?
 .SS "Step 2"
 .PP
 Connect the board to USB and run the following command:

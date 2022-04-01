@@ -8,9 +8,27 @@
 	color: yellow;
 }
 body {
-    font-family: monospace;
+  font-family: monospace;
 	max-width: 80ch;
 	color: white;
 	background-color: black;
 	margin: auto;
+}
+a {
+  color: cyan;
+	max-width: 80ch;
+  white-space: pre-wrap; /* CSS3 */    
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */    
+  white-space: -o-pre-wrap; /* Opera 7 */    
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+a.logo {
+  color: white;
+  text-decoration: none;
+}
+
+a.contact {
+  text-decoration: none;
 }
