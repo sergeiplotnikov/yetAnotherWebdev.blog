@@ -1,0 +1,55 @@
+SET_ESCAPES () {
+	sed "s|_\/;|"`echo -e '\010'`"|g;" $1
+}
+
+DIAGRAMS () {
+	awk -f ~/yetanotherwebdev.blog/tools/diagrams.awk
+}
+
+GROFF () {
+	groff -Kutf8 -Tutf8 -man -t -rLL=80n -rLT=80n $1
+}
+
+SECTIONS () {
+	awk -f ~/yetanotherwebdev.blog/tools/sections.awk
+}
+
+HIGHLIGHTS () {
+	awk -f ~/yetanotherwebdev.blog/tools/highlights.awk
+}
+
+COLORS () {
+	sed -f ~/yetanotherwebdev.blog/tools/colors.sed
+}
+
+makeLess () {
+	SET_ESCAPES $1 | DIAGRAMS | GROFF | SECTIONS | HIGHLIGHTS | COLORS > $(pwd)/$1.less
+}
+
+LESS_THAN () {
+	sed "s/</\&lt\;/g;"
+}
+
+PRE_TAGS () {
+	sed -f ~/yetanotherwebdev.blog/tools/pre_tags.sed
+}
+
+LINKS () {
+	awk -f ~/yetanotherwebdev.blog/tools/links.awk
+}
+
+HEADERS () {
+	awk -f ~/yetanotherwebdev.blog/tools/headers.awk
+}
+
+REMOVE_ESCAPES () {
+	col -bx
+}
+
+COMPLETE_HTML () {
+	awk -f ~/yetanotherwebdev.blog/tools/complete_html.awk
+}
+
+makeHtml () {
+	SET_ESCAPES $1 | DIAGRAMS | GROFF | LESS_THAN | PRE_TAGS | LINKS | HEADERS | REMOVE_ESCAPES | COMPLETE_HTML > $(pwd)/$1.html
+}
