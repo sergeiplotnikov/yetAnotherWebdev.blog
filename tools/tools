@@ -3,7 +3,7 @@ SET_ESCAPES () {
 }
 
 DIAGRAMS () {
-	awk -f ~/yetAnotherWebdev.blog/tools/diagrams.awk
+	awk -f $PROJECT_FOLDER/tools/diagrams.awk
 }
 
 GROFF () {
@@ -11,15 +11,15 @@ GROFF () {
 }
 
 SECTIONS () {
-	awk -f ~/yetAnotherWebdev.blog/tools/sections.awk
+	awk -f $PROJECT_FOLDER/tools/sections.awk
 }
 
 HIGHLIGHTS () {
-	awk -f ~/yetAnotherWebdev.blog/tools/highlights.awk
+	awk -f $PROJECT_FOLDER/tools/highlights.awk
 }
 
 COLORS () {
-	sed -f ~/yetAnotherWebdev.blog/tools/colors.sed
+	sed -f $PROJECT_FOLDER/tools/colors.sed
 }
 
 LESS_THAN () {
@@ -27,7 +27,7 @@ LESS_THAN () {
 }
 
 PRE_TAGS () {
-	sed -f ~/yetAnotherWebdev.blog/tools/pre_tags.sed
+	sed -f $PROJECT_FOLDER/tools/pre_tags.sed
 }
 
 INDEX_LINKS () {
@@ -35,15 +35,15 @@ INDEX_LINKS () {
 }
 
 LINKS () {
-	awk -f ~/yetAnotherWebdev.blog/tools/links3.awk
+	awk -f $PROJECT_FOLDER/tools/links3.awk
 }
 
 LINKS2 () {
-	sed -f ~/yetAnotherWebdev.blog/tools/links4.sed
+	sed -f $PROJECT_FOLDER/tools/links4.sed
 }
 
 HEADERS () {
-	awk -f ~/yetAnotherWebdev.blog/tools/headers.awk
+	awk -f $PROJECT_FOLDER/tools/headers.awk
 }
 
 REMOVE_ESCAPES () {
@@ -51,7 +51,7 @@ REMOVE_ESCAPES () {
 }
 
 COMPLETE_HTML () {
-	awk -f ~/yetAnotherWebdev.blog/tools/complete_html.awk
+	awk -f $PROJECT_FOLDER/tools/complete_html.awk
 }
 
 makeLess () {
