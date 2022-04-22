@@ -1,0 +1,615 @@
+<html><head><link rel="stylesheet" href="../../styles.css"></head><body><pre>
+yet_another_webdev(blog)           2022-04-22           yet_another_webdev(blog)
+
+
+
+<b>PROJECT</b>
+       Understanding ECMAScript 6
+
+<b>POST</b>
+       Chapter 02 - String and Regular Expressions
+
+<b>DESCRIPTION</b>
+       Chapter 2 introduces new support for Unicode and regular expressions, and
+       the new "Template Literals" feature.
+
+
+
+
+<b>Better Unicode Support</b>
+       Bedore ES6, JS assumed that each 16-bit sequence, called a  'code  unit',
+       represented  a single character. All string functions and properties were
+       base on these 16-bit code units.
+
+   <b>UTF-16 Code Points</b>
+       The Unicode standard assigns a unique identifier for every  character  in
+       the  world.  These identifiers are called 'code points'. They are numbers
+       starting at 0. For UTF-16 the code points can consist  of  multiple  code
+       units. The first 2^16 code points are represented by a single 16-bit code
+       unit. This range is called  the  Basic  Multilingual  Plane  (BMP).  Code
+       points  beyond  this  range  belong to one of the 'supplementary planes'.
+       Code points there are represented in UTF-16 using  'surrogate  pairs'  in
+       which  a  single code point is represented by two 16-bit code units. That
+       means that in a string a character can be represeted by one or two 16-bit
+       code units.
+
+</pre><pre class="terminal">
+$ cat > test1.js
+let text = "" + String.fromCodePoint(134071);
+console.log(text);
+console.log(text.length);
+console.log(/^.$/.test(text));
+console.log(text.charAt(0));
+console.log(text.charAt(1));
+console.log(text.charCodeAt(0));
+console.log(text.charCodeAt(1));
+^C
+$ node test1.js
+𠮷
+2
+false
+�
+�
+55362
+57271
+</pre><pre>
+
+
+       The  134071  code  point  is  represented  by  a  surrogate painr, so the
+       functions in this example treat the string as having two characters.  ES6
+       addresses  these  issues  by  standardizing  sting  operations to support
+       surrogate pairs.
+
+   <b>The codePointAt() Method</b>
+       A method added in ES6 that retreives the Unicode code point that maps  to
+       a  given  position  in  a  string.  It  accepts  code unit positions, not
+       character positions.
+
+</pre><pre class="terminal">
+$ cat > test2.js
+let text = "a" + String.fromCodePoint(134071);
+console.log(text);
+
+console.log(text.charCodeAt(0));
+console.log(text.charCodeAt(1));
+console.log(text.charCodeAt(2));
+
+console.log(text.codePointAt(0));
+console.log(text.codePointAt(1));
+console.log(text.codePointAt(2));
+
+console.log(text.length);
+^C
+$ node test2.js
+a𠮷
+97
+55362
+57271
+97
+134071
+57271
+3
+</pre><pre>
+
+
+       codePointAt() method returns the same value  as  charCodeAt()  unless  it
+       operates on non-BMP characters.
+
+   <b>The String.fromCodePoint() Method</b>
+       This function produces a single character string from a given code point.
+
+   <b>The normalize() Method</b>
+       Different  characters  can  be considered equivalent for sorting or other
+       comparison  based  operations.  There  are  two  ways  to  define   these
+       relationships:
+
+       •      "Canonical  equivalence"  means  that two sequences of code points
+              are considered interchangeable in all aspects.
+
+       •      "Compatibility" means that two compatible sequences of code points
+              different but can be used interchangeable in certain situations.
+
+       Due  to  these  relationships, two strings representing fundumentally the
+       same text can contain different code point sequences.  For  example,  the
+       'æ'  character  adn  the  'ae'  string  can  be  used interchangeably but
+       strictly not equivalent unless normalized.
+
+       EC6 supports Unicode normalization forms by giving string  a  normalize()
+       method. It optionally accepts a single string parametere to indicate what
+       normalization for should be applied:
+
+       •      Normalization Form Canonical Composition ("NFC"), the default
+
+       •      Normalization Form Canonical Decomposition ("NFD")
+
+       •      Normalization Form Compatibility Composition ("NFKC")
+
+       •      Normalization Form Compatibility Decomposition ("NFKD")
+
+       Before comparing strings, both strings must be  normalized  to  the  same
+       form.
+
+<b>The Regular Expression u Flag</b>
+   <b>The u Flag in Action</b>
+       When  regural  expression  has the 'u' flag set, it switches from working
+       with code units to working with characters. In this case, surrogate pairs
+       will not be treated as a separate character.
+
+</pre><pre class="terminal">
+$ cat > test3.js
+let text = "" + String.fromCodePoint(134071);
+console.log(text);
+console.log(text.length);
+console.log(/^.$/.test(text));
+console.log(/^.$/u.test(text));
+^C
+$ node test3.js
+𠮷
+2
+false
+true
+</pre><pre>
+
+   <b>Counting Code Points</b>
+       Under  ES6, the 'length' property still returns the number of code units.
+       Using the regex 'u' flag one can write a code ponint counting function as
+       follows:
+
+</pre><pre class="terminal">
+$ cat > codePointCounter.js
+function codePointLength(text) {
+     let result = text.match(/[\s\S]/gu);
+     return result ? result.length : 0;
+}
+
+console.log(codePointLength("abc"));
+console.log(codePointLength(String.fromCodePoint(134071) + "bc"));
+^C
+$ node codePointCounter.js
+3
+3
+</pre><pre>
+
+
+              [page  19]  "Although  this  appreach  works,  it's not very fast,
+              especially when applied to long strings.  You  can  use  a  string
+              iterator  (discussed  in  Chapter  8)  as well. In general, try to
+              minimize counting code points whenever possible." [page 19]
+
+<b>Other String Changes</b>
+   <b>Methods for Identifying Substrings</b>
+       ES6  includes  additional  methods  for  identifying  substrings  besides
+       indexOf():
+
+       •      includes():  returns  TRUE  is  the  given  text is found anywhere
+              within the string.
+
+       •      startsWith(): returns TRUE if the  given  text  is  found  at  the
+              beginning of the string.
+
+       •      endsWith():  returns TRUE if the given text is found at the end of
+              the string.
+
+       Each method accepts two arguments: the text to search for and an optional
+       index from which to start the search.
+
+              [page  20]  "The  startsWith(), endsWith(), and includes() methods
+              will throw an error if you pass a regular expression instead of  a
+              string. In contrast, indexOf() and lastIndexOf() convert a regular
+              expression argument  into  a  string  and  then  search  for  that
+              string." [page 20]
+
+   <b>The repeat() Method</b>
+       This method returns a string containing n copies of the given string. Its
+       useful in code formating for creating indentation levels:
+
+</pre><pre class="terminal">
+$ cat > repeat.js
+console.log("abc ".repeat(3));
+^C
+$ node repeat.js
+abc abc abc
+</pre><pre>
+
+
+<b>Other Regular Expression Changes</b>
+   <b>The Regular Expression y flag</b>
+       The y flag affects a regular expression search's sticky property, and  it
+       tells  the  search to start matching characters in a string at a position
+       specified by the regular expressions 'lastIndex' property. If there is no
+       match at that location, the regular expression stops matching:
+
+</pre><pre class="terminal">
+$ cat > stickyRegex.js
+let text = "hello1 hello2 hello3",
+    pattern = /hello\d\s?/,
+    result = pattern.exec(text),
+    globalPattern = /hello\d\s?/g,
+    globalResult = globalPattern.exec(text),
+    stickyPattern = /hello\d\s?/y,
+    stickyResult = stickyPattern.exec(text);
+
+console.log(result[0]);
+console.log(globalResult[0]);
+console.log(stickyResult[0], '\n');
+
+pattern.lastIndex = 1;
+globalPattern.lastIndex = 1;
+stickyPattern.lastIndex = 1;
+
+result = pattern.exec(text);
+globalResult = globalPattern.exec(text);
+stickyResult = stickyPattern.exec(text);
+
+console.log(result[0]);
+console.log(globalResult[0]);
+console.log("" + (null === stickyResult), stickyPattern.lastIndex, '\n');
+
+stickyResult = stickyPattern.exec(text);
+console.log(stickyResult[0], stickyPattern.lastIndex);
+stickyResult = stickyPattern.exec(text);
+console.log(stickyResult[0], stickyPattern.lastIndex);
+stickyResult = stickyPattern.exec(text);
+console.log(stickyResult[0], stickyPattern.lastIndex);
+^C
+$ node stickyRegex.js
+hello1
+hello1
+hello1
+
+hello1
+hello2
+true 0
+
+hello1  7
+hello2  14
+hello3 20
+</pre><pre>
+
+
+       Analisys of the example above:
+
+       1.     All 3 patterns found the matching pattern 'hello1 '.
+
+       2.     "lastIndex" of all 3 patterns was set to 1.
+
+       3.     The  no-flags pattern ignored the 'lastIndex' property and started
+              matching from the begining  of  the  string.  The  global  pattern
+              matched  to  'hello2 ' as expected. Sticky pattern does not behave
+              like the global  one  and  tries  to  match  at  the  position  of
+              'lastIndex'.
+
+       4.     Because  the  'lastIndex' of the sticky is 1. Sticky pattern fails
+              to match and 'stickyResult' is set to NULL while  sticky  patterns
+              'lastIndex' is set to 0.
+
+       5.     Since  'lastIndex'  of the sticky pattern is set to 0, the pattern
+              matches the text successfully 3 times as expected.
+
+       There are two subtle details about the 'y' flag:
+
+       •      The 'lastIndex' property is honored only when the  methods  called
+              exist  on  the  regular expression object, like exec() and test().
+              Passing the 'y' flag to a string  method  like  match()  will  not
+              result in sticky behavior.
+
+       •      When  the sticky regular expression use the '^' character to match
+              the start of a string, they only  match  from  the  start  of  the
+              string  (or the start of the line in multiline mode). Althouhg the
+              'lastIndex' is 0, the '^' makes a sticky  regular  expression  the
+              same as a non-sticky one. If the 'lastIndex' doesn't correspond to
+              the beginning of  the  string  in  the  single-line  mode  or  the
+              beginning  of  a  line  in  a  multiline  mode, the sticky regular
+              expression will never match.
+
+   <b>Duplicate Regular Expressions</b>
+       In ES5 the following code duplicates a regular expression:
+
+</pre><pre class="terminal">
+$ cat > es5regexDuplicateOk.js
+var re1 = /ab/i,
+    re2 = new RegExp(re1);
+^C
+$ node es5regexDuplicateOk.js
+$
+</pre><pre>
+
+
+       The following code is legal in ES6 but not in ES5:
+
+</pre><pre class="terminal">
+$ cat > regexDuplicate.js
+var re1 = /ab/i,
+    re2 = new RegExp(re1, "g");
+
+console.log(re1.toString());
+console.log(re2.toString());
+^C
+$ node regexDuplicate.js
+/ab/i
+/ab/g
+</pre><pre>
+
+
+   <b>Tne flags Property</b>
+       ES6 allows you to read the flags of a regular expression using a getter:
+
+</pre><pre class="terminal">
+$ cat > flags.js
+var re = /ab/g;
+console.log(re.source);
+console.log(re.flags);
+^C
+$ node flags.js
+ab
+g
+</pre><pre>
+
+
+<b>Template Literals</b>
+       ES6 brings template literals to provide the following  features  that  JS
+       lacked
+
+       •      Multiline strings - a formal concept of multiline strings.
+
+       •      Basic  string  formatting - the ability to substitute parts of the
+              string for values contained in variables.
+
+       •      HTML escaping - the ability to transform a string so it is safe to
+              insert into HTML.
+
+   <b>Basic Syntax</b>
+       The  simplest  use  of string literals is to create string using backtics
+       instead single or double quotes:
+
+</pre><pre class="terminal">
+$ cat > string.js
+let text = `Hello world!`;
+console.log(text);
+console.log(typeof text);
+console.log(text.length);
+^C
+$ node string.js
+Hello world!
+string
+12
+</pre><pre>
+
+
+       To include backtick character inside  string  literal,  escape  it  using
+       backslash. There is no need to escape single or double quotes.
+
+   <b>Multiline Strings</b>
+       When  using  single  or  double  quotes  for  strings, the string must be
+       contained on a single line.
+
+   <b>Pre-ES6 Workaround</b>
+</pre><pre class="terminal">
+$ cat > multilineES5.js
+let text1 = "hello \
+world";
+
+let text2 = "1st line \n\
+2nd line";
+
+console.log(text1);
+console.log(text2);
+^C
+$ node multilineES5.js
+hello world
+1st line
+2nd line
+</pre><pre>
+
+
+       The second string in example above SHOULD print out 2 lines on all  major
+       JS  engines. However the behavior is defined as a bug and many developers
+       recomend avoding it. Anoter pre-ES6 solution is  to  join  and  array  of
+       single line strings:
+
+</pre><pre class="terminal">
+$ cat > multilineES5_array.js
+let arr = [
+     "1st line",
+     "2nd line",
+     "3rd line"
+];
+console.log(arr.join("\n"));
+^C
+$ node multilineES5_array.js
+1st line
+2nd line
+3rd line
+</pre><pre>
+
+
+   <b>Multiline Strings the Easy Way</b>
+</pre><pre class="terminal">
+$ cat > multilineString.js
+let text1 = `1st line
+2nd line`;
+
+let text2 = `3rd line
+             4th line`;
+
+let text3 = `5th line\n6th line`;
+
+console.log(text1);
+console.log(text1.length);
+
+console.log(text2);
+console.log(text2.length);
+
+console.log(text3);
+console.log(text3.length);
+^C
+$ node multilineString.js
+1st line
+2nd line
+17
+3rd line
+             4th line
+30
+5th line
+6th line
+17
+</pre><pre>
+
+
+       Whitespace  characters are part of the strings, so mind indentation. '\n'
+       can be used inside template literals.
+
+   <b>Making Substitutions</b>
+       Substitutions are delimited by an opening '${' and a closing '}' that can
+       have any JS expression inside:
+
+</pre><pre class="terminal">
+$ cat > substitution.js
+let name = "Nicholas",
+    message = `Hello, ${name}.`;
+
+console.log(message);
+^C
+$ node substitution.js
+Hello, Nicholas.
+</pre><pre>
+
+
+       In  the  example  above,  the  'message' variable holds the result of the
+       substitution immediately.
+
+              [page 28] "A template literal can access any  variable  accessible
+              in  the  scope  in  which  it  is  defined.  Attempting  to use an
+              undeclared variable in a  template  literal  throws  an  error  in
+              strict and non-strict modes" [page 28]
+
+       Substitutions can be any JS expressions. Since template literals are also
+       JS expressions they can be used in substitution:
+
+</pre><pre class="terminal">
+$ cat > substitutions.js
+let count = 10,
+    price = 0.25,
+    message = `${count} items cost $${(count * price).toFixed(2)}.`;
+
+console.log(message);
+
+let name = "Nicholas",
+    greeting =
+        `Hello, ${
+            `my name is ${ name }`
+        }.`;
+
+console.log(greeting);
+^C
+$ node substitutions.js
+10 items cost $2.50.
+Hello, my name is Nicholas.
+</pre><pre>
+
+
+   <b>Tagged Templates</b>
+       A template tag preforms a transformation  on  the  template  literal  and
+       returns the final string value.
+
+   <b>Defining Tags</b>
+       A  tag  is  simply  a function that is called with the processed template
+       literal data. The 1st argument is an array containing the literal strings
+       as  interpreted by JS. Each subsequest argumetnt is the interpreted value
+       of each substitution.
+
+</pre><pre class="terminal">
+$ cat > tag.js
+function myTag(literals, ...substitutions) {
+     console.log('literals:');
+     literals.forEach(
+          function(literal) { console.log(literal); }
+     );
+     console.log('substitutions:');
+     substitutions.forEach(
+          function(substitution) { console.log(substitution); }
+     );
+}
+
+let count = 10,
+    price = 0.25,
+    message = myTag`${count} items cost $${(count * price).toFixed(2)}.`;
+^C
+$ node tag.js
+literals:
+
+ items cost $
+substitutions:
+10
+2.50
+</pre><pre>
+
+
+       From the exmple above we can see that the 'literals' array consistst of 3
+       parts:  an  empty  string  before  the 1st substitution, the part between
+       substitutions and the '.' string after the last substitution. The  number
+       of substitutions will always be one fewer than that of literals.
+
+              [page  31]  "The  values  contained  in  'substitutions'  are  not
+              necessarily strings. If an expression evaluates to a number, as in
+              the  previous example, the numeric value is passed in. Determining
+              how such values should output in the result is part of  the  tag's
+              job." [page 31]
+
+   <b>Using Raw Values in Template Literals</b>
+       Template tags also have access to raw string information, which primarily
+       means access to character escapes before they're transformed  into  their
+       character  equivalents. The simplest way to work with raw string value is
+       to use the built-in String.raw() tag:
+
+</pre><pre class="terminal">
+$ cat > raw.js
+let text = "Multiline\nstring";
+console.log(text);
+console.log(String.raw`${text}`);
+console.log(String.raw`1st line\n2nd line`);
+^C
+$ node raw.js
+Multiline
+string
+Multiline
+string
+1st line\n2nd line
+</pre><pre>
+
+
+       The raw string information is also passed into  template  tags.  The  1st
+       fragment  in  a  tag  function  is an array with an extra property called
+       'raw'. It is an array containing  the  raw  equivalent  of  each  literal
+       value.
+
+</pre><pre class="terminal">
+$ cat > rawTag.js
+function raw(literals, ...substitutions) {
+     let result = '';
+     for (let i = 0; i &lt; substitutions.length; ++i) {
+          result += literals.raw[i];
+          result += substitutions[i];
+     }
+     result += literals.raw[literals.length - 1];
+     return result;
+};
+
+let message = raw`Multiline\nstring`;
+
+console.log(message);
+console.log(message.length);
+
+console.log('Multiline\\nstring');
+console.log('Multiline\\nstring'.length);
+^C
+$ node rawTag.js
+Multiline\nstring
+17
+Multiline\nstring
+17
+</pre><pre>
+
+
+yet_another_webdev(blog)                                yet_another_webdev(blog)
+</pre></body></html>

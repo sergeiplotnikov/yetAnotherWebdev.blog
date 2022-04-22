@@ -9,3 +9,6 @@ inoremap /ssh S_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;H_/;I_/;G_/;H_/;L_/;I_
 inoremap /eh  E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
 
 inoremap /link L_/;I_/;N_/;K_/;URL_GOES_HEREL_/;I_/;N_/;K_/;TITLE_GOES_HEREL_/;I_/;N_/;K_/;
+
+inoremap /ul .IP \(bu<Enter>ITEM #1<Enter>.IP \(bu<Enter>ITEM #2
+inoremap /ol .TP<Enter>.B 1.<Enter>ITEM #1<Enter>.TP<Enter>.B 2.<Enter>ITEM #2
