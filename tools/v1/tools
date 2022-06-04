@@ -207,7 +207,7 @@ __add_post_entry () {
 		_after_line=$(($_after_line+1))
 		sed -i "$_after_line i .PP" $_homepage_index_file
 		_after_line=$(($_after_line+1))
-		sed -i "$_after_line i L_/;I_/;N_/;K_/;./"$_project_index.html"L_/;I_/;N_/;K_/;"$_project_title"L_/;I_/;N_/;K_/;?" $_homepage_index_file
+		sed -i "$_after_line"' i L_/;I_/;N_/;K_/;./'"$_project_index.html"'L_/;I_/;N_/;K_/;'"$_project_title"'L_/;I_/;N_/;K_/;?"' $_homepage_index_file
 		_after_line=$(($_after_line+1))
 		sed -i "$_after_line i .PP" $_homepage_index_file
 		_after_line=$(($_after_line+1))
