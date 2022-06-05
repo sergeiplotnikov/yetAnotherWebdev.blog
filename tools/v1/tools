@@ -1,6 +1,25 @@
 PROJECT_FOLDER="$(pwd | awk -F'yetAnotherWebdev.blog' '{ print $1 }')yetAnotherWebdev.blog"
 OS=$(uname)
 TOOLSVERSION="toolsV1"
+if [ "$OS" = "Darwin" ]; then
+	ERRORS=0
+	command -v gdate > /dev/null
+	if [ "$?" = "1" ]; then
+		echo "!!! You dont have 'gdate' installed !!!"
+		echo "run 'brew install coreutils'"
+		ERRORS=$(($ERRORS + 1))
+	fi
+	man groff | col -xb | grep -- "-K arg" > /dev/null
+	if [ "$?" = "1" ]; then
+		echo "!!! You have an older version on groff that does not suppour -K flag !!!"
+		echo "run 'brew install groff'"
+		ERRORS=$(($ERRORS + 1))
+	fi
+	if [ ! $ERRORS -eq 0 ]; then
+		echo "$ERRORS"
+		return
+	fi
+fi
 
 makePost () {
 	if [ -z "$1" ]; then
