@@ -1,0 +1,56 @@
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+PROJECTPLACEHOLDER
+.POST_TITLE
+POSTPLACEHOLDER
+.POST_DESCRIPTION
+DESCRIPTIONPLACEHOLDER
+.SOURCES
+.SOURCE_TITLE
+Introduction to FPGA Part 1 - What is an FPGA?
+.SOURCE_LINK
+https://www.youtube.com/watch?v=lLg1AgA2Xoo
+.SOURCE_TITLE
+Introduction to FPGA Part 2 - Getting Started with Yosys, IceStorm, and Apio
+.SOURCE_LINK
+https://www.youtube.com/watch?v=gtkQ84Euyww
+.SOURCE_TITLE
+iCEstick User Manual
+.SOURCE_LINK
+https://www.latticesemi.com/view_document?document_id=50701
+.SOURCE_TITLE
+apio - Open source ecosystem for open FPGA boards
+.SOURCE_LINK
+https://github.com/FPGAwars/apio
+.HEADER_BODY_SEPARATOR
+.HEADER_PRIMARY
+Introduction to FPGA Part 1:
+.PARAGRAPH
+Get the evaluation board:
+.LINK
+https://www.latticesemi.com/icestick
+.HEADER_PRIMARY
+Introduction to FPGA Part 2:
+.HEADER_SECONDARY
+Installing apio:
+.LIST_ITEM_ORDERED
+Install python3 and pip
+.LIST_ITEM_ORDERED
+Using pip, install apio
+.LIST_ITEM_ORDERED
+Install apio packages: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio install --all E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+.LIST_ITEM_ORDERED
+Install FTDI drivers: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio drivers --ftdi-enable E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+.HEADER_SECONDARY
+Download "leds" example
+.LIST_ITEM_ORDERED
+List example projects provided by apio: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio examples --list E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+.LIST_ITEM_ORDERED
+Download the "icestick/leds" example: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio examples -d icestick/leds E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+.LIST_ITEM_ORDERED
+Connect the board and go inside the downloaded example folder, icestick/leds, containing 6 files.
+.LIST_ITEM_ORDERED
+Run the following commands to build the project and upload it to the board: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio verify && apio build && apio upload E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+.LIST_ITEM_ORDERED
+Eventualy all 5 leds, 4 red and 1 green, will light up.

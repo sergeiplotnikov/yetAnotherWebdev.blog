@@ -88,24 +88,22 @@ publish () {
 		echo "MISSING PUBLISH PROJECT"
 		return
 	fi
-    local _post_file=$1
-	local _project=$2
-	local _postid=$(date +%y%m%d%H%M%S%N)
-	if [ "$OS" = "Darwin" ]; then
-		_postid=$(gdate +%y%m%d%H%M%S%N)
-	fi
-	local _filename=$(echo $_post_file | awk -F'.blog' '{ print $1 }' | awk -F'wip/' '{ print $2 }')
-	local _new_file_name="${_postid}_${_filename}"
-    local _title=$(awk 'NR==6' "$_post_file")
-    local _project_title=$(awk 'NR==4' "$PROJECT_FOLDER/content/$_project_directory_name/index.blog")
-    local _description=$(sed '8!d' "$_post_file")
-	local _publish_destination="$PROJECT_FOLDER/content/$_project"
+	local _publish_destination="$PROJECT_FOLDER/content/$_project_directory_name"
 	if [ ! -f "$_publish_destination/index.blog" ]; then
 		echo "PROJECT NOT FOUND"
 		return
 	fi
+	local _postid=$(date +%y%m%d%H%M%S%N)
+	if [ "$OS" = "Darwin" ]; then
+		_postid=$(gdate +%y%m%d%H%M%S%N)
+	fi
+	local _filename=$(echo $_blog_post_path | awk -F'.blog' '{ print $1 }' | awk -F'wip/' '{ print $2 }')
+	local _new_file_name="${_postid}_${_filename}"
+    local _title=$(awk 'NR==6' "$_blog_post_path")
+    local _project_title=$(awk 'NR==4' "$PROJECT_FOLDER/content/$_project_directory_name/index.blog")
+    local _description=$(sed '8!d' "$_blog_post_path")
     __add_to_project_index $_publish_destination $_new_file_name "$_title" "$_description"
-	__add_to_homepage "$_project/$_new_file_name" "$_project_title - $_title" "$_description"
+	__add_to_homepage "$_project_directory_name/$_new_file_name" "$_project_title - $_title" "$_description"
 	if [ "$OS" = "Linux" ]; then
 		sed -i "4s/.*/$_project_title/" $1
 		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $1
@@ -115,8 +113,8 @@ publish () {
 		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $1
 		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $1
 	fi
-	__make_html $_post_file $_publish_destination/$_new_file_name
-	__make_less $_post_file $_publish_destination/$_new_file_name
+	__make_html $_blog_post_path $_publish_destination/$_new_file_name
+	__make_less $_blog_post_path $_publish_destination/$_new_file_name
 	mv $_blog_post_path "$_publish_destination/$_new_file_name.blog"
 	local _update_status_line_num=$(grep -n "./content/$_project_directory_name/index.html" $PROJECT_FOLDER/index.blog | awk -F':' '{ print $1 }')
 	_update_status_line_num=$(($_update_status_line_num-2))
@@ -187,6 +185,10 @@ __headers () {
 	awk -f $PROJECT_FOLDER/tools/v1/headers.awk
 }
 
+__lists () {
+	awk -f $PROJECT_FOLDER/tools/v1/lists.awk
+}
+
 __remove_escapes () {
 	col -bx
 }
@@ -211,7 +213,7 @@ __make_html () {
 	else
 		DESTINATION="$2.html"
 	fi
-	__set_escapes $1 | __diagrams | __less_than | __links | __groff | __links2 | __pre_tags | __headers | __remove_escapes | __complete_html > $DESTINATION
+	__set_escapes $1 | __diagrams | __less_than | __links | __groff | __links2 | __pre_tags | __headers | __lists | __remove_escapes | __complete_html > $DESTINATION
 }
 
 __add_post_entry () {
