@@ -141,7 +141,7 @@ __diagrams () {
 	if [ "$OS" = "Linux" ]; then
 		awk -f $PROJECT_FOLDER/tools/v1/diagrams_linux.awk
 	else
-		awk -f $PROJECT_FOLDER/tools/v1/diagrams_darwin.awk
+		sed 's|\\|\\\\|g'
 	fi
 }
 
