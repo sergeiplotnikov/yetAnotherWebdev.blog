@@ -104,18 +104,10 @@ publish () {
     local _description=$(sed '8!d' "$_blog_post_path")
     __add_to_project_index $_publish_destination $_new_file_name "$_title" "$_description"
 	__add_to_homepage "$_project_directory_name/$_new_file_name" "$_project_title - $_title" "$_description"
-	if [ "$OS" = "Linux" ]; then
-		sed -i "4s/.*/$_project_title/" $1
-		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $1
-		sed -i "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $1
-	else
-		sed -i '' "4s/.*/$_project_title/" $1
-		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $1
-		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $1
-	fi
+	__replace_placeholders $PROJECT_FOLDER/$_blog_post_path $_project_title
 	__make_html $_blog_post_path $_publish_destination/$_new_file_name
 	__make_less $_blog_post_path $_publish_destination/$_new_file_name
-	mv $_blog_post_path "$_publish_destination/$_new_file_name.blog"
+	__persist_blog_file $_blog_post_path "$_publish_destination/$_new_file_name.blog"
 	local _update_status_line_num=$(grep -n "./content/$_project_directory_name/index.html" $PROJECT_FOLDER/index.blog | awk -F':' '{ print $1 }')
 	_update_status_line_num=$(($_update_status_line_num-2))
 	local _posts_count="$(ls $PROJECT_FOLDER/content/$_project_directory_name | wc -l)"
@@ -132,6 +124,26 @@ publish () {
 ################################################################################
 ## functions below, starting with __ are 'private'
 ################################################################################
+
+__replace_placeholders () {
+	local _blog_post_path=$1
+	local _project_title=$2
+	if [ "$OS" = "Linux" ]; then
+		sed -i "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
+		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
+		sed -i "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_blog_post_path
+	else
+		sed -i '' "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
+		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
+		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_blog_post_path
+	fi
+}
+
+__persist_blog_file () {
+	local _blog_post_path=$1
+	local _new_blog_post_path=$2
+	mv $_blog_post_path "$_publish_destination/$_new_file_name.blog"
+}
 
 __set_escapes () {
 	sed "s|_\/;|"`echo -e '\010'`"|g;" $1
@@ -223,6 +235,7 @@ __add_post_entry () {
 	local _project_index="$4"
 	local _project_title="$5"
 	local _project_description="$6"
+
 	if [ "$OS" = "Linux" ]; then
 		sed -i "$_after_line i .SS \"$_project_entry\"" $_homepage_index_file
 		_after_line=$(($_after_line+1))
@@ -232,7 +245,7 @@ __add_post_entry () {
 		_after_line=$(($_after_line+1))
 		sed -i "$_after_line i .PP" $_homepage_index_file
 		_after_line=$(($_after_line+1))
-		sed -i "$_after_line i $6" $_homepage_index_file
+		sed -i "$_after_line i $_project_description" $_homepage_index_file
 		_after_line=$(($_after_line+1))
 		sed -i "$_after_line i .sp" $_homepage_index_file
 	else
@@ -240,11 +253,11 @@ __add_post_entry () {
 		_after_line=$(($_after_line+1))
 		sed -i '' -e ""$_after_line"s/^//p; "$_after_line"s/^.*/.PP/" $_homepage_index_file
 		_after_line=$(($_after_line+1))
-		sed -i '' -e ""$_after_line"s/^//p; "$_after_line"s|^.*|L_\/;I_\/;N_\/;K_\/;./"$_project_index.html"L_\/;I_\/;N_\/;K_\/;"$_project_title"L_\/;I_\/;N_\/;K_\/;?|" $_homepage_index_file
+		sed -i '' -e $_after_line's/^//p; '$_after_line's/^.*/\&/g; '$_after_line's|^.*|L_\/;I_\/;N_\/;K_\/;./'$_project_index.html'L_\/;I_\/;N_\/;K_\/;'$_project_title'L_\/;I_\/;N_\/;K_\/;?|' $_homepage_index_file
 		_after_line=$(($_after_line+1))
 		sed -i '' -e ""$_after_line"s/^//p; "$_after_line"s/^.*/.PP/" $_homepage_index_file
 		_after_line=$(($_after_line+1))
-		sed -i '' -e ""$_after_line"s/^//p; "$_after_line"s/^.*/$6/" $_homepage_index_file
+		sed -i '' -e $_after_line's/^//p; '$_after_line's/^.*/\&/g; '$_after_line's/^.*/'$_project_description'/' $_homepage_index_file
 		_after_line=$(($_after_line+1))
 		sed -i '' -e ""$_after_line"s/^//p; "$_after_line"s/^.*/.sp/" $_homepage_index_file
 	fi

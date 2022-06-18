@@ -1,7 +1,8 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )
 TOOLS_DIR=$(echo "$SCRIPT_DIR" | sed 's/v2//' )
 TOOLSVERSION="toolsV2"
-source "$TOOLS_DIR"/v1/toolsV1
+source "$TOOLS_DIR"/v1/toolsV1.sh
+export TOOLSVERSION="toolsV2"
 
 eval "$(echo "publishV1 () {"; declare -f publish | tail -n +2 )"
 
@@ -19,15 +20,44 @@ publish () {
 		echo "MISSING PUBLISH PROJECT"
 		return
 	fi
-	local _temp_blog_post_path=/tmp/$(echo $_blog_post_path | sed 's|wip/||')
-	cp $PROJECT_FOLDER/$_blog_post_path $_temp_blog_post_path
-	__v2_to_v1 $_temp_blog_post_path
+	#local _temp_blog_post_path=/tmp/$(echo $_blog_post_path | sed 's|wip/||')
+	#cp $PROJECT_FOLDER/$_blog_post_path $_temp_blog_post_path
+	#__v2_to_v1 $_temp_blog_post_path
+	local _v1_blog_post_path="$PROJECT_FOLDER"/"$_blog_post_path".v1
+	cp $PROJECT_FOLDER/$_blog_post_path $_v1_blog_post_path
+	__v2_to_v1 $_v1_blog_post_path
+	publishV1 $(echo $_v1_blog_post_path | awk -F'yetAnotherWebdev.blog/' '{ print $2 }') $_project_directory_name
+	rm $_v1_blog_post_path
 }
-
-__v2_to_v1 () {
-	echo "running __v2_to_v1"
-
+__persist_blog_file () {
+	local _blog_post_path=$PROJECT_FOLDER/$1
+	local _new_blog_post_path=$2
+	mv $(echo $_blog_post_path | sed 's|\.blog\.v1|\.blog|') "$_publish_destination/$_new_file_name.blog"
+}
+__replace_placeholders () {
 	local _blog_post_path=$1
+	local _v1_blog_post_path=$(echo $_blog_post_path | sed 's|\.blog\.v1|\.blog|')
+	local _project_title=$2
+	if [ "$OS" = "Linux" ]; then
+		sed -i "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
+		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
+		sed -i "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_blog_post_path
+		sed -i "4s/.*/\&/; 4s/.*/$_project_title/" $_v1_blog_post_path
+		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_v1_blog_post_path
+		sed -i "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_v1_blog_post_path
+	else
+		sed -i '' "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
+		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
+		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_blog_post_path
+		sed -i '' "4s/.*/\&/; 4s/.*/$_project_title/" $_v1_blog_post_path
+		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_v1_blog_post_path
+		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_v1_blog_post_path
+	fi
+}
+__v2_to_v1 () {
+	local _blog_post_path=$1
+	__replace_end_highlight $_blog_post_path
+	__replace_start_terminal_highlight $_blog_post_path
 	__replace_page_layout $_blog_post_path
 	__replace_project_title $_blog_post_path
 	__replace_post_title $_blog_post_path
@@ -76,7 +106,6 @@ __replace_source_title () {
 	declare -a _line_numbers=($(echo $_line_numbers_string))
 	for _current in $_line_numbers
 	do
-		echo $(($_current + 1))
 		sed -i '' -E "$(($_current + 1))"'s/^(.*)/\"\1\"/' $_blog_post_path
 	done
 	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's/.SOURCE_TITLE\n/.SS /g' $_blog_post_path
@@ -87,7 +116,6 @@ __replace_source_link () {
 	declare -a _line_numbers=($(echo $_line_numbers_string))
 	for _current in $_line_numbers
 	do
-		echo $(($_current + 1))
 		sed -i '' -E "$(($_current + 1))"'s|^(.*)|L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;|' $_blog_post_path
 	done
 	sed -i '' 's/.SOURCE_LINK/.PP /g' $_blog_post_path
@@ -132,4 +160,12 @@ __replace_link () {
 		sed -i '' -E "$(($_current + 1))"'s|^(.*)|L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;?|' $_blog_post_path
 	done
 	sed -i '' 's|.LINK|.PP|g' $_blog_post_path
+}
+__replace_end_highlight () {
+	local _blog_post_path=$1
+	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.END_HIGHLIGHT| E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
+}
+__replace_start_terminal_highlight () {
+	local _blog_post_path=$1
+	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.START_TERMINAL_HIGHLIGHT\n| S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
 }

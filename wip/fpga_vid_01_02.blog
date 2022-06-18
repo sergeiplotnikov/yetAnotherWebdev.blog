@@ -39,18 +39,33 @@ Install python3 and pip
 .LIST_ITEM_ORDERED
 Using pip, install apio
 .LIST_ITEM_ORDERED
-Install apio packages: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio install --all E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+Install apio packages:
+.START_TERMINAL_HIGHLIGHT
+$ apio install --all
+.END_HIGHLIGHT
 .LIST_ITEM_ORDERED
-Install FTDI drivers: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio drivers --ftdi-enable E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+Install FTDI drivers:
+.START_TERMINAL_HIGHLIGHT
+$ apio drivers --ftdi-enable
+.END_HIGHLIGHT
 .HEADER_SECONDARY
 Download "leds" example
 .LIST_ITEM_ORDERED
-List example projects provided by apio: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio examples --list E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+List example projects provided by apio:
+.START_TERMINAL_HIGHLIGHT
+$ apio examples --list
+.END_HIGHLIGHT
 .LIST_ITEM_ORDERED
-Download the "icestick/leds" example: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio examples -d icestick/leds E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+Download the "icestick/leds" example:
+.START_TERMINAL_HIGHLIGHT
+$ apio examples -d icestick/leds
+.END_HIGHLIGHT
 .LIST_ITEM_ORDERED
 Connect the board and go inside the downloaded example folder, icestick/leds, containing 6 files.
 .LIST_ITEM_ORDERED
-Run the following commands to build the project and upload it to the board: S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;$ apio verify && apio build && apio upload E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;
+Run the following commands to build the project and upload it to the board:
+.START_TERMINAL_HIGHLIGHT
+$ apio verify && apio build && apio upload
+.END_HIGHLIGHT
 .LIST_ITEM_ORDERED
 Eventualy all 5 leds, 4 red and 1 green, will light up.
