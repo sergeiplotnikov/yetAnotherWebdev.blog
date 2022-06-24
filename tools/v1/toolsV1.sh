@@ -106,7 +106,7 @@ publish () {
 	__add_to_homepage "$_project_directory_name/$_new_file_name" "$_project_title - $_title" "$_description"
 	__replace_placeholders $PROJECT_FOLDER/$_blog_post_path $_project_title
 	__make_html $_blog_post_path $_publish_destination/$_new_file_name
-	__make_less $_blog_post_path $_publish_destination/$_new_file_name
+	#__make_less $_blog_post_path $_publish_destination/$_new_file_name
 	__persist_blog_file $_blog_post_path "$_publish_destination/$_new_file_name.blog"
 	local _update_status_line_num=$(grep -n "./content/$_project_directory_name/index.html" $PROJECT_FOLDER/index.blog | awk -F':' '{ print $1 }')
 	_update_status_line_num=$(($_update_status_line_num-2))
