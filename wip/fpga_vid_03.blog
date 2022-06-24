@@ -1,36 +1,41 @@
-.TH "yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
-.nh
-.SH "PROJECT"
-Introduction to FPGA
-.SH "POST"
-Video 3 - Simplest example
-.SH "DESCRIPTION"
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+PROJECTPLACEHOLDER
+.POST_TITLE
+Video 3 - Simplest example 
+.POST_DESCRIPTION
 Using video #3 in the series to create an even simpler example, with a simpler verilog file
-.SH "Sources"
-.SS "Introduction to FPGA Part 3 - Getting started with Verilog
-.PP
-L_/;I_/;N_/;K_/;https://www.youtube.com/watch?v=A4VfBoP4HdkL_/;I_/;N_/;K_/;https://www.youtube.com/watch?v=A4VfBoP4HdkL_/;I_/;N_/;K_/;
-.SS "ICEstick User Manual"
-.PP
-L_/;I_/;N_/;K_/;https://www.latticesemi.com/view_document?document_id=50701L_/;I_/;N_/;K_/;https://www.latticesemi.com/view_document?document_id=50701L_/;I_/;N_/;K_/;
-.sp 3
-.SH "PMOD layout"
-.PP
+.SOURCES
+.SOURCE_TITLE
+Introduction to FPGA Part 3 - Getting started with Verilog
+.SOURCE_LINK
+https://www.youtube.com/watch?v=A4VfBoP4Hdk
+.SOURCE_TITLE
+ICEstick User Manual
+.SOURCE_LINK
+https://www.latticesemi.com/view_document?document_id=50701
+.HEADER_BODY_SEPARATOR
+.HEADER_PRIMARY
+PMOD layout
+.PARAGRAPH
 The PMOD connector diagram from the video can be found on page 19 of the user
 manual. All the pins on the diagram are numbered, on the boar itself only pins
 6 and 12 are numbered, enough to figure out the rest. 
-.SH "Simplest example: 1 LED 1 button"
-.PP
+.HEADER_PRIMARY
+Simplest example: 1 LED 1 button
+.PARAGRAPH
 To make the green LED light up when the button is pressed we need to define the
 led as an output, a PMOD pin as input (connected to the button) and define the
 "connection" between the two. 
-.PP
+.PARAGRAPH
 On page 5 of the user manual we can see that the green led is connected to pin
 95. On page 19, in the PMOD diagram, we see that PMOD pin #5 is GND and PMOD
 pin #1 is also "PIO1 02". On the same page, int the "BANK 1" diagram we se that
 "PIO1 02" is pin 78.
-.SS "Step 1"
-.PP
+.HEADER_SECONDARY
+Step 1
+.PARAGRAPH
 Create the directory for this project and inside it create the following two
 source files:
 .sp
@@ -43,9 +48,10 @@ set_io -pullup yes    button    78
 # LEDs
 set_io                led_grn   95
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-.SS "Link to complete source file:"
-.PP
-L_/;I_/;N_/;K_/;http://soydev.lol/source/fpga_intro/220115_video_03/olob/olob.pcfL_/;I_/;N_/;K_/;http://soydev.lol/source/fpga_intro/220115_video_03/olob/olob.pcfL_/;I_/;N_/;K_/;?
+.HEADER_SECONDARY
+Link to complete source file:
+.LINK
+http://soydev.lol/source/fpga_intro/220115_video_03/olob/olob.pcf
 .sp
 .RS -20
 .nf
@@ -57,11 +63,13 @@ module olob_module(
     assign led_grn = ~button;
 endmodule
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-.SS "Link to complete source file:"
-.PP
-L_/;I_/;N_/;K_/;http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.vL_/;I_/;N_/;K_/;http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.vL_/;I_/;N_/;K_/;?
-.SS "Step 2"
-.PP
+.HEADER_SECONDARY
+Link to complete source file:
+.LINK
+http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.v
+.HEADER_SECONDARY
+Step 2
+.PARAGRAPH
 Connect the board to USB and run the following command:
 .sp
 .RS -20
@@ -69,8 +77,9 @@ Connect the board to USB and run the following command:
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 $ apio init -b icestick && apio build && apio upload
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-.SS "Step 3"
-.PP
+.HEADER_SECONDARY
+Step 3
+.PARAGRAPH
 The prject should be built and uploaded to the board. Connect a "button" to the
 board, connecting pins 05 and 01 of the PMOD. The button can be any switch,
 closing and breaking, the connection between the two pins. Closing the

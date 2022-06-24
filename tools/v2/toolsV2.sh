@@ -56,8 +56,7 @@ __replace_placeholders () {
 }
 __v2_to_v1 () {
 	local _blog_post_path=$1
-	__replace_end_highlight $_blog_post_path
-	__replace_start_terminal_highlight $_blog_post_path
+	__replace_highlight $_blog_post_path
 	__replace_page_layout $_blog_post_path
 	__replace_project_title $_blog_post_path
 	__replace_post_title $_blog_post_path
@@ -70,6 +69,8 @@ __v2_to_v1 () {
 	__replace_header_secondary $_blog_post_path
 	__replace_list_item_ordered $_blog_post_path
 	__replace_link $_blog_post_path
+	__replace_paragraph $_blog_post_path
+	__replace_section $_blog_post_path
 }
 
 __replace_page_layout () {
@@ -161,11 +162,21 @@ __replace_link () {
 	done
 	sed -i '' 's|.LINK|.PP|g' $_blog_post_path
 }
-__replace_end_highlight () {
+__replace_highlight () {
 	local _blog_post_path=$1
 	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.END_HIGHLIGHT| E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
-}
-__replace_start_terminal_highlight () {
-	local _blog_post_path=$1
 	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.START_TERMINAL_HIGHLIGHT\n| S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
+	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.START_INFO_HIGHLIGHT\n| S_/;T_/;A_/;R_/;T_/;I_/;N_/;F_/;O_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
+	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.START_SOURCE_HIGHLIGHT\n| S_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;C_/;E_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
+}
+__replace_paragraph () {
+	local _blog_post_path=$1
+	sed -i '' 's|.PARAGRAPH|.PP|g' $_blog_post_path
+}
+__replace_section () {
+	local _blog_post_path=$1
+	sed -i '' 's|.START_SOURCE_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
+	sed -i '' 's|.START_INFO_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;I_/;N_/;F_/;O_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
+	sed -i '' 's|.START_TERMINAL_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
+	sed -i '' 's|.END_SECTION|E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
 }
