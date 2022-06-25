@@ -29,6 +29,23 @@ publish () {
 	publishV1 $(echo $_v1_blog_post_path | awk -F'yetAnotherWebdev.blog/' '{ print $2 }') $_project_directory_name
 	rm $_v1_blog_post_path
 }
+makePost () {
+	if [ -z "$1" ]
+	then
+		echo "ERROR: Missing filename"
+		return
+	fi
+	if [ -f "$PROJECT_FOLDER/wip/$1.blog" ]
+	then
+		echo "ERROR: Filename already used in 'wip' directory"
+		return
+	fi
+	echo ".PAGE_LAYOUT\n\"yet_another_webdev\" \"blog\" \"\" \"TOOLSVERSIONPLACEHOLDER\" \"PUBLISH_DATE\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".PROJECT_TITLE\n\"PROJECTPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".POST_TITLE\n\"POSTPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".POST_DESCRIPTION\n\"DESCRIPTIONPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".HEADER_BODY_SEPARATOR" >> "$PROJECT_FOLDER/wip/$1.blog"
+}
 __persist_blog_file () {
 	local _blog_post_path=$PROJECT_FOLDER/$1
 	local _new_blog_post_path=$2
@@ -84,9 +101,6 @@ __replace_page_layout () {
 
 __replace_project_title () {
 	local _blog_post_path=$1
-	#local _line_number=$(grep -n ".PROJECT_TITLE" $_blog_post_path| awk -F':' '{ print $1 }')
-	#sed -i '' -E "$((_line_number + 1))"'s/^(.*)/\"\1\"/' $_blog_post_path
-	#sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's/.PROJECT_TITLE\n/.SH /g' $_blog_post_path
 	sed -i '' 's/.PROJECT_TITLE/.SH \"PROJECT\"/' $_blog_post_path
 }
 __replace_post_title () {

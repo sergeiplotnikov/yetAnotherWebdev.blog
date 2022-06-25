@@ -23,7 +23,7 @@ The PMOD connector diagram from the video can be found on page 19 of the user
 manual. All the pins on the diagram are numbered, on the boar itself only pins
 6 and 12 are numbered, enough to figure out the rest. 
 .HEADER_PRIMARY
-Simplest example: 1 LED 1 button
+Simplest example: One LED One button
 .PARAGRAPH
 To make the green LED light up when the button is pressed we need to define the
 led as an output, a PMOD pin as input (connected to the button) and define the
@@ -38,45 +38,34 @@ Step 1
 .PARAGRAPH
 Create the directory for this project and inside it create the following two
 source files:
-.sp
-.RS -20
-.nf
-S_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
+.START_TERMINAL_SECTION
+$ mkdir ./olob
+$ cat > ./olob/olob.pcf
 # buttons
-set_io -pullup yes    button    78
+set_io -pullup yes	button	78
 
 # LEDs
-set_io                led_grn   95
-E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-.HEADER_SECONDARY
-Link to complete source file:
-.LINK
-http://soydev.lol/source/fpga_intro/220115_video_03/olob/olob.pcf
-.sp
-.RS -20
-.nf
-S_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
+set_io			led_grn	95
+^C
+$ cat > ./olob/olob.v
 module olob_module(
-    input button,
-    output led_grn
+	input button,
+	output led_grn
 );
-    assign led_grn = ~button;
+	assign led_grn = ~button;
 endmodule
-E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-.HEADER_SECONDARY
-Link to complete source file:
-.LINK
-http://yetanotherwebdev.blog/source/fpga_intro/220115_video_03/olob/olob.v
+^C
+.END_SECTION
 .HEADER_SECONDARY
 Step 2
 .PARAGRAPH
-Connect the board to USB and run the following command:
-.sp
-.RS -20
-.nf
-S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
+Connect the board to USB and run the following commands:
+.START_TERMINAL_SECTION
+$ cd olob && ls
+olob.pcf
+olob.v
 $ apio init -b icestick && apio build && apio upload
-E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
+.END_SECTION
 .HEADER_SECONDARY
 Step 3
 .PARAGRAPH
@@ -84,10 +73,7 @@ The prject should be built and uploaded to the board. Connect a "button" to the
 board, connecting pins 05 and 01 of the PMOD. The button can be any switch,
 closing and breaking, the connection between the two pins. Closing the
 connection betweent the two pins should make the green LED light up.
-.sp
-.RS -20
-.nf
-S_/;T_/;A_/;R_/;T_/;I_/;N_/;F_/;O_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
+.START_INFO_SECTION
                                /   /                                            
                          /────/   /───────────────────────────────┐             
                         /    /   /                                │             
@@ -121,4 +107,4 @@ S_/;T_/;A_/;R_/;T_/;I_/;N_/;F_/;O_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
                         \      /   /                              │            
                          \────/   /───────────────────────────────┘            
                              /   /                                              
-E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
+.END_SECTION
