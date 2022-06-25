@@ -112,7 +112,7 @@ publish () {
 	_update_status_line_num=$(($_update_status_line_num-2))
 	local _posts_count="$(ls $PROJECT_FOLDER/content/$_project_directory_name | wc -l)"
 	_posts_count=$((_posts_count-2))
-	_posts_count=$((_posts_count/3))
+	_posts_count=$((_posts_count/2))
 	if [ "$OS" = "Linux" ]; then
 		sed -i "$_update_status_line_num s/.*/.SS \"Last update: $(date +%Y-%m-%d) -- $_posts_count posts\"/" $PROJECT_FOLDER/index.blog
 	else
