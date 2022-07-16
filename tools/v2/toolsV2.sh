@@ -4,7 +4,11 @@ TOOLSVERSION="toolsV2"
 source "$TOOLS_DIR"/v1/toolsV1.sh
 export TOOLSVERSION="toolsV2"
 
-eval "$(echo "publishV1 () {"; declare -f publish | tail -n +2 )"
+if [ "$OS" = "Darwin" ]; then
+	eval "$(echo "publishV1 () {"; declare -f publish | tail -n +2 )"
+else
+	eval "$(echo "publishV1 () {"; declare -f publish | tail -n +3 )"
+fi
 
 publish () {
 # https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
@@ -40,10 +44,14 @@ makePost () {
 		echo "ERROR: Filename already used in 'wip' directory"
 		return
 	fi
-	echo ".PAGE_LAYOUT\n\"yet_another_webdev\" \"blog\" \"\" \"TOOLSVERSIONPLACEHOLDER\" \"PUBLISH_DATE\"" >> "$PROJECT_FOLDER/wip/$1.blog"
-	echo ".PROJECT_TITLE\n\"PROJECTPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
-	echo ".POST_TITLE\n\"POSTPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
-	echo ".POST_DESCRIPTION\n\"DESCRIPTIONPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".PAGE_LAYOUT" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo "\"yet_another_webdev\" \"blog\" \"\" \"TOOLSVERSIONPLACEHOLDER\" \"PUBLISH_DATE\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".PROJECT_TITLE" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo "\"PROJECTPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".POST_TITLE" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo "\"POSTPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo ".POST_DESCRIPTION" >> "$PROJECT_FOLDER/wip/$1.blog"
+	echo "\"DESCRIPTIONPLACEHOLDER\"" >> "$PROJECT_FOLDER/wip/$1.blog"
 	echo ".HEADER_BODY_SEPARATOR" >> "$PROJECT_FOLDER/wip/$1.blog"
 }
 __persist_blog_file () {
@@ -194,3 +202,27 @@ __replace_section () {
 	sed -i '' 's|.START_TERMINAL_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
 	sed -i '' 's|.END_SECTION|E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
 }
+
+if [ "$OS" = "Linux" ]; then
+	declare -a _funcs=$(echo "\
+		__replace_highlight \
+		__replace_page_layout \
+		__replace_project_title \
+		__replace_post_title \
+		__replace_post_description \
+		__replace_sources \
+		__replace_source_title \
+		__replace_source_link \
+		__replace_header_body_separator \
+		__replace_header_primary \
+		__replace_header_secondary \
+		__replace_list_item_ordered \
+		__replace_link \
+		__replace_paragraph \
+		__replace_section \
+	")
+	for _func in $_funcs
+	do
+		eval "$(type $_func | tail -n +2 | sed 's|sed -i '`echo "''"`' |sed -i |g')"
+	done
+fi
