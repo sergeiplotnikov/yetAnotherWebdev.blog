@@ -298,7 +298,7 @@ __rebuild_homepage () {
 		sed -i '5s;.*;              <a class="contact" href="https://github.com/sergeiplotnikov">Github</a> | <a class="contact" href="mailto:sergei.plotnikov128@gmail.com">sergei.plotnikov128@gmail.com</a> | <a class="contact" href="https://www.linkedin.com/in/sergei-plotnikov">LinkedIn</a>;' "$PROJECT_FOLDER/index.html"
 		sed -i "6 i <hr />" "$PROJECT_FOLDER/index.html"
 		sed -i "6 i </pre>" "$PROJECT_FOLDER/index.html"
-		sed -i '8s|.*|</pre><a class="logo" target="_black" href="https://patorjk.com/software/taag">|' "$PROJECT_FOLDER/index.html"
+		sed -i '8s|.*|<pre><a class="logo" target="_black" href="https://patorjk.com/software/taag">|' "$PROJECT_FOLDER/index.html"
 		sed -i '21s|.*|</a></pre><pre>|' "$PROJECT_FOLDER/index.html"
 		sed -i 's/()//' "$PROJECT_FOLDER/index.html"
 	else
@@ -309,7 +309,7 @@ __rebuild_homepage () {
 		sed -i '' '5s;.*;              <a class="contact" href="https://github.com/sergeiplotnikov">Github</a> | <a class="contact" href="mailto:sergei.plotnikov128@gmail.com">sergei.plotnikov128@gmail.com</a> | <a class="contact" href="https://www.linkedin.com/in/sergei-plotnikov">LinkedIn</a>;' "$PROJECT_FOLDER/index.html"
 		sed -i '' -e "5s/^//p; 5s|^.*|<hr />|" "$PROJECT_FOLDER/index.html"
 		sed -i '' -e "5s/^//p; 5s|^.*|</pre>|" "$PROJECT_FOLDER/index.html"
-		sed -i '' '8s|.*|</pre><a class="logo" target="_black" href="https://patorjk.com/software/taag">|' "$PROJECT_FOLDER/index.html"
+		sed -i '' '8s|.*|<pre><a class="logo" target="_black" href="https://patorjk.com/software/taag">|' "$PROJECT_FOLDER/index.html"
 		sed -i '' '21s|.*|</a></pre><pre>|' "$PROJECT_FOLDER/index.html"
 		sed -i '' 's/()//' "$PROJECT_FOLDER/index.html"
 	fi
