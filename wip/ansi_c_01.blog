@@ -1,0 +1,28 @@
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+"PROJECTPLACEHOLDER"
+.POST_TITLE
+"POSTPLACEHOLDER"
+.POST_DESCRIPTION
+"DESCRIPTIONPLACEHOLDER"
+.HEADER_BODY_SEPARATOR
+.HEADER_PRIMARY
+1.1 Getting Started
+.HEADER_SECONDARY
+Compiling and running "Hello, World!"
+.SOURCE_FILE
+PROJECT_DIRECTORY/NEW_FILE_NAME/helloworld.c
+.START_SOURCE_SECTION
+#include <stdio.h>
+
+void main() {
+	printf("Hello, World!\n");
+};
+.END_SECTION
+.START_TERMINAL_SECTION
+$ gcc -o hello ./source/PROJECT_DIRECTORY/NEW_FILE_NAME/helloworld.c
+$ ./hello
+Hello, World!
+$
+.END_SECTION

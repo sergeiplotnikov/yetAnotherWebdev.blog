@@ -32,3 +32,8 @@ a.logo {
 a.contact {
   text-decoration: none;
 }
+
+pre {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}

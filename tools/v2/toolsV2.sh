@@ -1,6 +1,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )
 TOOLS_DIR=$(echo "$SCRIPT_DIR" | sed 's/v2//' )
 TOOLSVERSION="toolsV2"
+URL=http://yetanotherwebdev.blog
 source "$TOOLS_DIR"/v1/toolsV1.sh
 export TOOLSVERSION="toolsV2"
 
@@ -60,23 +61,34 @@ __persist_blog_file () {
 	mv $(echo $_blog_post_path | sed 's|\.blog\.v1|\.blog|') "$_publish_destination/$_new_file_name.blog"
 }
 __replace_placeholders () {
+	echo "running v2 __replace_placeholders"
 	local _blog_post_path=$1
 	local _v1_blog_post_path=$(echo $_blog_post_path | sed 's|\.blog\.v1|\.blog|')
 	local _project_title=$2
+	local _project_directory_name=$3
+	local _new_filename=$4
 	if [ "$OS" = "Linux" ]; then
 		sed -i "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
 		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
 		sed -i "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_blog_post_path
+		sed -i "s/PROJECT_DIRECTORY/$_project_directory_name/g" $_blog_post_path
+		sed -i "s/NEW_FILE_NAME/$_new_filename/g" $_blog_post_path
 		sed -i "4s/.*/\&/; 4s/.*/$_project_title/" $_v1_blog_post_path
 		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_v1_blog_post_path
 		sed -i "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_v1_blog_post_path
+		sed -i "s/PROJECT_DIRECTORY/$_project_directory_name/g" $_v1_blog_post_path
+		sed -i "s/NEW_FILE_NAME/$_new_filename/g" $_v1_blog_post_path
 	else
 		sed -i '' "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
 		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
 		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_blog_post_path
+		sed -i '' "s/PROJECT_DIRECTORY/$_project_directory_name/g" $_blog_post_path
+		sed -i '' "s/NEW_FILE_NAME/$_new_filename/g" $_blog_post_path
 		sed -i '' "4s/.*/\&/; 4s/.*/$_project_title/" $_v1_blog_post_path
 		sed -i '' "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_v1_blog_post_path
 		sed -i '' "s/TOOLSVERSIONPLACEHOLDER/$TOOLSVERSION/" $_v1_blog_post_path
+		sed -i '' "s/PROJECT_DIRECTORY/$_project_directory_name/g" $_v1_blog_post_path
+		sed -i '' "s/NEW_FILE_NAME/$_new_filename/g" $_v1_blog_post_path
 	fi
 }
 __v2_to_v1 () {
@@ -93,6 +105,8 @@ __v2_to_v1 () {
 	__replace_header_primary $_blog_post_path
 	__replace_header_secondary $_blog_post_path
 	__replace_list_item_ordered $_blog_post_path
+	__replace_source_file $_blog_post_path
+	__replace_source_file_link $_blog_post_path
 	__replace_link $_blog_post_path
 	__replace_paragraph $_blog_post_path
 	__replace_section $_blog_post_path
@@ -184,6 +198,16 @@ __replace_link () {
 	done
 	sed -i '' 's|.LINK|.PP|g' $_blog_post_path
 }
+__replace_source_file_link () {
+	local _blog_post_path=$1
+	local _line_numbers_string=$(grep -n ".LINK" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
+	declare -a _line_numbers=($(echo $_line_numbers_string))
+	for _current in $_line_numbers
+	do
+		sed -i '' -E "$(($_current + 1))""s|^(.*)|L_/;I_/;N_/;K_/;$URL/source/\1L_/;I_/;N_/;K_/;$URL/source/\1L_/;I_/;N_/;K_/;?|" $_blog_post_path
+	done
+	sed -i '' 's|.LINK|.PP|g' $_blog_post_path
+}
 __replace_highlight () {
 	local _blog_post_path=$1
 	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|\n.END_HIGHLIGHT| E_/;N_/;D_/;H_/;I_/;G_/;H_/;L_/;I_/;G_/;H_/;T_/;|g' $_blog_post_path
@@ -200,7 +224,11 @@ __replace_section () {
 	sed -i '' 's|.START_SOURCE_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;S_/;O_/;U_/;R_/;C_/;E_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
 	sed -i '' 's|.START_INFO_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;I_/;N_/;F_/;O_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
 	sed -i '' 's|.START_TERMINAL_SECTION|.sp\n.RS -20\n.nf\nS_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
-	sed -i '' 's|.END_SECTION|E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
+	sed -i '' 's|.END_SECTION|.RS 20\n.fi\nE_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.|' $_blog_post_path
+}
+__replace_source_file () {
+	local _blog_post_path=$1
+	sed -i '' 's|.SOURCE_FILE|.SH "______ Download complete source file ___________________________________________"\n.SOURCE_FILE_LINK|' $_blog_post_path
 }
 
 if [ "$OS" = "Linux" ]; then
@@ -218,8 +246,10 @@ if [ "$OS" = "Linux" ]; then
 		__replace_header_secondary \
 		__replace_list_item_ordered \
 		__replace_link \
+		__replace_source_file_link \
 		__replace_paragraph \
 		__replace_section \
+		__replace_source_file \
 	")
 	for _func in $_funcs
 	do

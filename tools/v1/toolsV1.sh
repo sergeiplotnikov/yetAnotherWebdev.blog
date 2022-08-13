@@ -99,12 +99,13 @@ publish () {
 	fi
 	local _filename=$(echo $_blog_post_path | awk -F'.blog' '{ print $1 }' | awk -F'wip/' '{ print $2 }')
 	local _new_file_name="${_postid}_${_filename}"
-    local _title=$(awk 'NR==6' "$_blog_post_path")
-    local _project_title=$(awk 'NR==4' "$PROJECT_FOLDER/content/$_project_directory_name/index.blog")
-    local _description=$(sed '8!d' "$_blog_post_path")
-    __add_to_project_index $_publish_destination $_new_file_name "$_title" "$_description"
+	local _title=$(awk 'NR==6' "$_blog_post_path")
+	local _project_title=$(awk 'NR==4' "$PROJECT_FOLDER/content/$_project_directory_name/index.blog")
+	local _description=$(sed '8!d' "$_blog_post_path")
+	__add_to_project_index $_publish_destination $_new_file_name "$_title" "$_description"
 	__add_to_homepage "$_project_directory_name/$_new_file_name" "$_project_title - $_title" "$_description"
-	__replace_placeholders $PROJECT_FOLDER/$_blog_post_path $_project_title
+	__replace_placeholders $PROJECT_FOLDER/$_blog_post_path $_project_title $_project_directory_name $_new_file_name
+	__rename_source_folder $_filename $_new_file_name $_project_directory_name
 	__make_html $_blog_post_path $_publish_destination/$_new_file_name
 	#__make_less $_blog_post_path $_publish_destination/$_new_file_name
 	__persist_blog_file $_blog_post_path "$_publish_destination/$_new_file_name.blog"
@@ -125,9 +126,18 @@ publish () {
 ## functions below, starting with __ are 'private'
 ################################################################################
 
+__rename_source_folder () {
+	local _old_filename=$1
+	local _new_filename=$2
+	local _project_name=$3
+	mv "$PROJECT_FOLDER/source/$_project_name/$_old_filename" "$PROJECT_FOLDER/source/$_project_name/$_new_filename"
+}
+
 __replace_placeholders () {
 	local _blog_post_path=$1
 	local _project_title=$2
+	local _project_directory_name=$3
+	local _new_filename=$4
 	if [ "$OS" = "Linux" ]; then
 		sed -i "4s/.*/\&/; 4s/.*/$_project_title/" $_blog_post_path
 		sed -i "s/PUBLISH_DATE/$(date +%Y-%m-%d)/" $_blog_post_path
