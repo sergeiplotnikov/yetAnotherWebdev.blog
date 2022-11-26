@@ -105,6 +105,7 @@ __v2_to_v1 () {
 	__replace_header_primary $_blog_post_path
 	__replace_header_secondary $_blog_post_path
 	__replace_list_item_ordered $_blog_post_path
+	__replace_list_item_unordered $_blog_post_path
 	__replace_source_file $_blog_post_path
 	__replace_source_file_link $_blog_post_path
 	__replace_link $_blog_post_path
@@ -188,6 +189,16 @@ __replace_list_item_ordered () {
 	done
 	sed -i '' -e ':a' -e 'N' -e '$!ba' -e 's|.TP .B|.TP\n.B|g' $_blog_post_path
 }
+__replace_list_item_unordered () {
+	local _blog_post_path=$1
+	local _line_numbers_string=$(grep -n ".LIST_ITEM_UNORDERED" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
+	declare -a _line_numbers=($(echo $_line_numbers_string))
+	for _current in $_line_numbers
+	do
+		sed -i '' -E "$_current"'s|^(.*)|.IP \\(bu|' $_blog_post_path
+		sed "$(($_current + 2))"'!d' $_blog_post_path | grep ".LIST_ITEM_UNORDERED" > /dev/null
+	done
+}
 __replace_link () {
 	local _blog_post_path=$1
 	local _line_numbers_string=$(grep -n ".LINK" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
@@ -245,6 +256,7 @@ if [ "$OS" = "Linux" ]; then
 		__replace_header_primary \
 		__replace_header_secondary \
 		__replace_list_item_ordered \
+		__replace_list_item_unordered \
 		__replace_link \
 		__replace_source_file_link \
 		__replace_paragraph \
