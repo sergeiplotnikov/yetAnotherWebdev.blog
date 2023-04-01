@@ -104,7 +104,7 @@ publish () {
 	local _description=$(sed '8!d' "$_blog_post_path")
 	__add_to_project_index $_publish_destination $_new_file_name "$_title" "$_description"
 	__add_to_homepage "$_project_directory_name/$_new_file_name" "$_project_title - $_title" "$_description"
-	__replace_placeholders $PROJECT_FOLDER/$_blog_post_path $_project_title $_project_directory_name $_new_file_name
+	__replace_placeholders "$PROJECT_FOLDER/$_blog_post_path" "$_project_title" "$_project_directory_name" "$_new_file_name"
 	__rename_source_folder $_filename $_new_file_name $_project_directory_name
 	__make_html $_blog_post_path $_publish_destination/$_new_file_name
 	#__make_less $_blog_post_path $_publish_destination/$_new_file_name
