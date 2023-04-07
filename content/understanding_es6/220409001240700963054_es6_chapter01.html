@@ -39,13 +39,13 @@ yet_another_webdev(blog)           2022-04-09           yet_another_webdev(blog)
        inaccessible in the inner scope.
 
 </pre><pre class="terminal">
-$ cat > shadow.js
+$ cat > shadow.js &lt;&lt;EOF
 var count = 30;
 if (true) {
      let count = 50;
      console.log(count);
 }
-^C
+EOF
 $ node shadow.js
 50
 </pre><pre>
@@ -68,7 +68,7 @@ $ node shadow.js
        modification of the object.
 
 </pre><pre class="terminal">
-$ cat > object.js
+$ cat > object.js &lt;&lt;EOF
 const person = {
      name: "Nicholas",
 };
@@ -77,7 +77,7 @@ console.log(person);
 person = {
      name: "Greg",
 };
-^C
+EOF
 $ node object.js
 { name: 'Greg' }
 /home/sergei/yetanotherwebdev.blog/temp/object.js:6
@@ -108,12 +108,12 @@ TypeError: Assignment to constant variable.
        before the definition. The following two examples demonstare this:
 
 </pre><pre class="terminal">
-$ cat > tdz.js
+$ cat > tdz.js &lt;&lt;EOF
 if (true) {
      console.log(typeof value);
      let value = "blue";
 }
-^C
+EOF
 $ node tdz.js
 /home/sergei/yetanotherwebdev.blog/temp/tdz.js:2
      console.log(typeof value);
@@ -136,12 +136,12 @@ ReferenceError: value is not defined
        was defined in but before the definition, thus in the TDZ.
 
 </pre><pre class="terminal">
-$ cat > noTdz.js
+$ cat > noTdz.js &lt;&lt;EOF
 console.log(typeof value);
 if (true) {
      let value = "blue";
 }
-^C
+EOF
 $ node noTdz.js
 undefined
 </pre><pre>
@@ -155,12 +155,12 @@ undefined
        loops block.
 
 </pre><pre class="terminal">
-$ cat > varForLoop.js
+$ cat > varForLoop.js &lt;&lt;EOF
 for ( var i = 0; i &lt; 3; i++) {
      console.log(i);
 }
 console.log(i);
-^C
+EOF
 $ node varForLoop.js
 0
 1
@@ -169,12 +169,12 @@ $ node varForLoop.js
 </pre><pre>
 
 </pre><pre class="terminal">
-$ cat > letForLoop.js
+$ cat > letForLoop.js &lt;&lt;EOF
 for ( let i = 0; i &lt; 3; i++) {
      console.log(i);
 }
 console.log(typeof i);
-^C
+EOF
 $ node letForLoop.js
 0
 1
@@ -191,7 +191,7 @@ undefined
        and creates the following issue:
 
 </pre><pre class="terminal">
-$ cat > varForLoopFuncs.js
+$ cat > varForLoopFuncs.js &lt;&lt;EOF
 var funcs = [];
 
 for ( var i = 0; i &lt; 3; i++) {
@@ -203,7 +203,7 @@ for ( var i = 0; i &lt; 3; i++) {
 funcs.forEach(function(func) {
      func();
 });
-^C
+EOF
 $ node varForLoopFuncs.js
 3
 3
@@ -220,7 +220,7 @@ $ node varForLoopFuncs.js
        functions.
 
 </pre><pre class="terminal">
-$ cat > varForLoopIIFE.js
+$ cat > varForLoopIIFE.js &lt;&lt;EOF
 var funcs = [];
 
 for ( var i = 0; i &lt; 3; i++) {
@@ -234,7 +234,7 @@ for ( var i = 0; i &lt; 3; i++) {
 funcs.forEach(function(func) {
      func();
 });
-^C
+EOF
 $ node varForLoopIIFE.js
 0
 1
@@ -250,7 +250,7 @@ $ node varForLoopIIFE.js
        the last example, but without using IIFEs:
 
 </pre><pre class="terminal">
-$ cat > letForLoop.js
+$ cat > letForLoop.js &lt;&lt;EOF
 var funcs = [];
 
 for ( let i = 0; i &lt; 3; i++) {
@@ -262,7 +262,7 @@ for ( let i = 0; i &lt; 3; i++) {
 funcs.forEach(function(func) {
      func();
 })
-^C
+EOF
 $ node letForLoop.js
 0
 1
@@ -285,11 +285,11 @@ $ node letForLoop.js
        update the value of the index:
 
 </pre><pre class="terminal">
-$ cat > constForLoop.js
+$ cat > constForLoop.js &lt;&lt;EOF
 for ( const i = 0; i &lt; 3; i++) {
      console.log(i);
 }
-^C
+EOF
 $ node constForLoop.js
 0
 /home/sergei/yetanotherwebdev.blog/temp/constForLoop_01.js:1
@@ -321,10 +321,10 @@ TypeError: Assignment to constant variable.
        globla property.
 
 </pre><pre class="terminal">
-$ cat > globalVar.js
+$ cat > globalVar.js &lt;&lt;EOF
 var xyz = 'some text';
 console.log('xyz' in global);
-^C
+EOF
 $ node globalVar.js
 false
 </pre><pre>
@@ -346,11 +346,11 @@ false
 </pre><pre class="terminal">
 $ echo "console.log(RegExp === global.RegExp)" | node
 true
-$ cat > globalShadowing.js
+$ cat > globalShadowing.js &lt;&lt;EOF
 let RegExp = '123';
 console.log(RegExp === global.RegExp);
 console.log(RegExp);
-^C
+EOF
 $ node globalShadowing.js
 false
 123

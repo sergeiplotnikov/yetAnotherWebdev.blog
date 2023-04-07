@@ -32,13 +32,13 @@ variable 'shadows' the other variale making it inaccessible in the inner scope.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > shadow.js
+$ cat > shadow.js <<EOF
 var count = 30;
 if (true) {
 	let count = 50;
 	console.log(count);
 }
-^C
+EOF
 $ node shadow.js
 50
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
@@ -62,7 +62,7 @@ object.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > object.js
+$ cat > object.js <<EOF
 const person = {
 	name: "Nicholas",
 };
@@ -71,7 +71,7 @@ console.log(person);
 person = {
 	name: "Greg",
 };
-^C
+EOF
 $ node object.js
 { name: 'Greg' }
 /home/sergei/yetanotherwebdev.blog/temp/object.js:6
@@ -104,12 +104,12 @@ definition. The following two examples demonstare this:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > tdz.js
+$ cat > tdz.js <<EOF
 if (true) {
 	console.log(typeof value);
 	let value = "blue";
 }
-^C
+EOF
 $ node tdz.js
 /home/sergei/yetanotherwebdev.blog/temp/tdz.js:2
 	console.log(typeof value);
@@ -134,12 +134,12 @@ defined in but before the definition, thus in the TDZ.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > noTdz.js
+$ cat > noTdz.js <<EOF
 console.log(typeof value);
 if (true) {
 	let value = "blue";
 }
-^C
+EOF
 $ node noTdz.js
 undefined
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
@@ -155,12 +155,12 @@ block.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > varForLoop.js
+$ cat > varForLoop.js <<EOF
 for ( var i = 0; i < 3; i++) {
 	console.log(i);
 }
 console.log(i);
-^C
+EOF
 $ node varForLoop.js
 0
 1
@@ -171,12 +171,12 @@ E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > letForLoop.js
+$ cat > letForLoop.js <<EOF
 for ( let i = 0; i < 3; i++) {
 	console.log(i);
 }
 console.log(typeof i);
-^C
+EOF
 $ node letForLoop.js
 0
 1
@@ -195,7 +195,7 @@ creates the following issue:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > varForLoopFuncs.js
+$ cat > varForLoopFuncs.js <<EOF
 var funcs = [];
 
 for ( var i = 0; i < 3; i++) {
@@ -207,7 +207,7 @@ for ( var i = 0; i < 3; i++) {
 funcs.forEach(function(func) {
 	func();
 });
-^C
+EOF
 $ node varForLoopFuncs.js
 3
 3
@@ -225,7 +225,7 @@ time of invokation, for each of the created functions.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > varForLoopIIFE.js
+$ cat > varForLoopIIFE.js <<EOF
 var funcs = [];
 
 for ( var i = 0; i < 3; i++) {
@@ -239,7 +239,7 @@ for ( var i = 0; i < 3; i++) {
 funcs.forEach(function(func) {
 	func();
 });
-^C
+EOF
 $ node varForLoopIIFE.js
 0
 1
@@ -257,7 +257,7 @@ example, but without using IIFEs:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > letForLoop.js
+$ cat > letForLoop.js <<EOF
 var funcs = [];
 
 for ( let i = 0; i < 3; i++) {
@@ -269,7 +269,7 @@ for ( let i = 0; i < 3; i++) {
 funcs.forEach(function(func) {
 	func();
 })
-^C
+EOF
 $ node letForLoop.js
 0
 1
@@ -293,11 +293,11 @@ the value of the index:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > constForLoop.js
+$ cat > constForLoop.js <<EOF
 for ( const i = 0; i < 3; i++) {
 	console.log(i);
 }
-^C
+EOF
 $ node constForLoop.js
 0
 /home/sergei/yetanotherwebdev.blog/temp/constForLoop_01.js:1
@@ -330,10 +330,10 @@ Node). This means you can accidentally overwrite an existing globla property.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > globalVar.js
+$ cat > globalVar.js <<EOF
 var xyz = 'some text';
 console.log('xyz' in global);
-^C
+EOF
 $ node globalVar.js
 false
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
@@ -357,11 +357,11 @@ shadow it.
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 $ echo "console.log(RegExp === global.RegExp)" | node
 true
-$ cat > globalShadowing.js
+$ cat > globalShadowing.js <<EOF
 let RegExp = '123';
 console.log(RegExp === global.RegExp);
 console.log(RegExp);
-^C
+EOF
 $ node globalShadowing.js
 false
 123

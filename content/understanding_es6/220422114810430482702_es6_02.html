@@ -34,7 +34,7 @@ yet_another_webdev(blog)           2022-04-22           yet_another_webdev(blog)
        code units.
 
 </pre><pre class="terminal">
-$ cat > test1.js
+$ cat > test1.js &lt;&lt;EOF
 let text = "" + String.fromCodePoint(134071);
 console.log(text);
 console.log(text.length);
@@ -43,7 +43,7 @@ console.log(text.charAt(0));
 console.log(text.charAt(1));
 console.log(text.charCodeAt(0));
 console.log(text.charCodeAt(1));
-^C
+EOF
 $ node test1.js
 𠮷
 2
@@ -66,7 +66,7 @@ false
        character positions.
 
 </pre><pre class="terminal">
-$ cat > test2.js
+$ cat > test2.js &lt;&lt;EOF
 let text = "a" + String.fromCodePoint(134071);
 console.log(text);
 
@@ -79,7 +79,7 @@ console.log(text.codePointAt(1));
 console.log(text.codePointAt(2));
 
 console.log(text.length);
-^C
+EOF
 $ node test2.js
 a𠮷
 97
@@ -136,13 +136,13 @@ a𠮷
        will not be treated as a separate character.
 
 </pre><pre class="terminal">
-$ cat > test3.js
+$ cat > test3.js &lt;&lt;EOF
 let text = "" + String.fromCodePoint(134071);
 console.log(text);
 console.log(text.length);
 console.log(/^.$/.test(text));
 console.log(/^.$/u.test(text));
-^C
+EOF
 $ node test3.js
 𠮷
 2
@@ -156,7 +156,7 @@ true
        follows:
 
 </pre><pre class="terminal">
-$ cat > codePointCounter.js
+$ cat > codePointCounter.js &lt;&lt;EOF
 function codePointLength(text) {
      let result = text.match(/[\s\S]/gu);
      return result ? result.length : 0;
@@ -164,7 +164,7 @@ function codePointLength(text) {
 
 console.log(codePointLength("abc"));
 console.log(codePointLength(String.fromCodePoint(134071) + "bc"));
-^C
+EOF
 $ node codePointCounter.js
 3
 3
@@ -204,9 +204,9 @@ $ node codePointCounter.js
        useful in code formating for creating indentation levels:
 
 </pre><pre class="terminal">
-$ cat > repeat.js
+$ cat > repeat.js &lt;&lt;EOF
 console.log("abc ".repeat(3));
-^C
+EOF
 $ node repeat.js
 abc abc abc
 </pre><pre>
@@ -220,7 +220,7 @@ abc abc abc
        match at that location, the regular expression stops matching:
 
 </pre><pre class="terminal">
-$ cat > stickyRegex.js
+$ cat > stickyRegex.js &lt;&lt;EOF
 let text = "hello1 hello2 hello3",
     pattern = /hello\d\s?/,
     result = pattern.exec(text),
@@ -251,7 +251,7 @@ stickyResult = stickyPattern.exec(text);
 console.log(stickyResult[0], stickyPattern.lastIndex);
 stickyResult = stickyPattern.exec(text);
 console.log(stickyResult[0], stickyPattern.lastIndex);
-^C
+EOF
 $ node stickyRegex.js
 hello1
 hello1
@@ -306,10 +306,10 @@ hello3 20
        In ES5 the following code duplicates a regular expression:
 
 </pre><pre class="terminal">
-$ cat > es5regexDuplicateOk.js
+$ cat > es5regexDuplicateOk.js &lt;&lt;EOF
 var re1 = /ab/i,
     re2 = new RegExp(re1);
-^C
+EOF
 $ node es5regexDuplicateOk.js
 $
 </pre><pre>
@@ -318,13 +318,13 @@ $
        The following code is legal in ES6 but not in ES5:
 
 </pre><pre class="terminal">
-$ cat > regexDuplicate.js
+$ cat > regexDuplicate.js &lt;&lt;EOF
 var re1 = /ab/i,
     re2 = new RegExp(re1, "g");
 
 console.log(re1.toString());
 console.log(re2.toString());
-^C
+EOF
 $ node regexDuplicate.js
 /ab/i
 /ab/g
@@ -335,11 +335,11 @@ $ node regexDuplicate.js
        ES6 allows you to read the flags of a regular expression using a getter:
 
 </pre><pre class="terminal">
-$ cat > flags.js
+$ cat > flags.js &lt;&lt;EOF
 var re = /ab/g;
 console.log(re.source);
 console.log(re.flags);
-^C
+EOF
 $ node flags.js
 ab
 g
@@ -363,12 +363,12 @@ g
        instead single or double quotes:
 
 </pre><pre class="terminal">
-$ cat > string.js
+$ cat > string.js &lt;&lt;EOF
 let text = `Hello world!`;
 console.log(text);
 console.log(typeof text);
 console.log(text.length);
-^C
+EOF
 $ node string.js
 Hello world!
 string
@@ -385,7 +385,7 @@ string
 
    <b>Pre-ES6 Workaround</b>
 </pre><pre class="terminal">
-$ cat > multilineES5.js
+$ cat > multilineES5.js &lt;&lt;EOF
 let text1 = "hello \
 world";
 
@@ -394,7 +394,7 @@ let text2 = "1st line \n\
 
 console.log(text1);
 console.log(text2);
-^C
+EOF
 $ node multilineES5.js
 hello world
 1st line
@@ -408,14 +408,14 @@ hello world
        single line strings:
 
 </pre><pre class="terminal">
-$ cat > multilineES5_array.js
+$ cat > multilineES5_array.js &lt;&lt;EOF
 let arr = [
      "1st line",
      "2nd line",
      "3rd line"
 ];
 console.log(arr.join("\n"));
-^C
+EOF
 $ node multilineES5_array.js
 1st line
 2nd line
@@ -425,7 +425,7 @@ $ node multilineES5_array.js
 
    <b>Multiline Strings the Easy Way</b>
 </pre><pre class="terminal">
-$ cat > multilineString.js
+$ cat > multilineString.js &lt;&lt;EOF
 let text1 = `1st line
 2nd line`;
 
@@ -442,7 +442,7 @@ console.log(text2.length);
 
 console.log(text3);
 console.log(text3.length);
-^C
+EOF
 $ node multilineString.js
 1st line
 2nd line
@@ -464,12 +464,12 @@ $ node multilineString.js
        have any JS expression inside:
 
 </pre><pre class="terminal">
-$ cat > substitution.js
+$ cat > substitution.js &lt;&lt;EOF
 let name = "Nicholas",
     message = `Hello, ${name}.`;
 
 console.log(message);
-^C
+EOF
 $ node substitution.js
 Hello, Nicholas.
 </pre><pre>
@@ -487,7 +487,7 @@ Hello, Nicholas.
        JS expressions they can be used in substitution:
 
 </pre><pre class="terminal">
-$ cat > substitutions.js
+$ cat > substitutions.js &lt;&lt;EOF
 let count = 10,
     price = 0.25,
     message = `${count} items cost $${(count * price).toFixed(2)}.`;
@@ -501,7 +501,7 @@ let name = "Nicholas",
         }.`;
 
 console.log(greeting);
-^C
+EOF
 $ node substitutions.js
 10 items cost $2.50.
 Hello, my name is Nicholas.
@@ -519,7 +519,7 @@ Hello, my name is Nicholas.
        of each substitution.
 
 </pre><pre class="terminal">
-$ cat > tag.js
+$ cat > tag.js &lt;&lt;EOF
 function myTag(literals, ...substitutions) {
      console.log('literals:');
      literals.forEach(
@@ -534,7 +534,7 @@ function myTag(literals, ...substitutions) {
 let count = 10,
     price = 0.25,
     message = myTag`${count} items cost $${(count * price).toFixed(2)}.`;
-^C
+EOF
 $ node tag.js
 literals:
 
@@ -563,12 +563,12 @@ substitutions:
        to use the built-in String.raw() tag:
 
 </pre><pre class="terminal">
-$ cat > raw.js
+$ cat > raw.js &lt;&lt;EOF
 let text = "Multiline\nstring";
 console.log(text);
 console.log(String.raw`${text}`);
 console.log(String.raw`1st line\n2nd line`);
-^C
+EOF
 $ node raw.js
 Multiline
 string
@@ -584,7 +584,7 @@ string
        value.
 
 </pre><pre class="terminal">
-$ cat > rawTag.js
+$ cat > rawTag.js &lt;&lt;EOF
 function raw(literals, ...substitutions) {
      let result = '';
      for (let i = 0; i &lt; substitutions.length; ++i) {
@@ -602,7 +602,7 @@ console.log(message.length);
 
 console.log('Multiline\\nstring');
 console.log('Multiline\\nstring'.length);
-^C
+EOF
 $ node rawTag.js
 Multiline\nstring
 17

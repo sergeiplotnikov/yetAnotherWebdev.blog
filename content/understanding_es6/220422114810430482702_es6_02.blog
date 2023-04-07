@@ -16,7 +16,7 @@ The Unicode standard assigns a unique identifier for every character in the worl
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > test1.js
+$ cat > test1.js <<EOF
 let text = "" + String.fromCodePoint(134071);
 console.log(text);
 console.log(text.length);
@@ -25,7 +25,7 @@ console.log(text.charAt(0));
 console.log(text.charAt(1));
 console.log(text.charCodeAt(0));
 console.log(text.charCodeAt(1));
-^C
+EOF
 $ node test1.js
 𠮷
 2
@@ -45,7 +45,7 @@ A method added in ES6 that retreives the Unicode code point that maps to a given
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > test2.js
+$ cat > test2.js <<EOF
 let text = "a" + String.fromCodePoint(134071);
 console.log(text);
 
@@ -58,7 +58,7 @@ console.log(text.codePointAt(1));
 console.log(text.codePointAt(2));
 
 console.log(text.length);
-^C
+EOF
 $ node test2.js
 a𠮷
 97
@@ -104,13 +104,13 @@ When regural expression has the 'u' flag set, it switches from working with code
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > test3.js
+$ cat > test3.js <<EOF
 let text = "" + String.fromCodePoint(134071);
 console.log(text);
 console.log(text.length);
 console.log(/^.$/.test(text));
 console.log(/^.$/u.test(text));
-^C
+EOF
 $ node test3.js
 𠮷
 2
@@ -124,7 +124,7 @@ Under ES6, the 'length' property still returns the number of code units. Using t
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > codePointCounter.js
+$ cat > codePointCounter.js <<EOF
 function codePointLength(text) {
 	let result = text.match(/[\s\S]/gu);
 	return result ? result.length : 0;
@@ -132,7 +132,7 @@ function codePointLength(text) {
 
 console.log(codePointLength("abc"));
 console.log(codePointLength(String.fromCodePoint(134071) + "bc"));
-^C
+EOF
 $ node codePointCounter.js
 3
 3
@@ -161,9 +161,9 @@ This method returns a string containing n copies of the given string. Its useful
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > repeat.js
+$ cat > repeat.js <<EOF
 console.log("abc ".repeat(3));
-^C
+EOF
 $ node repeat.js
 abc abc abc
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
@@ -176,7 +176,7 @@ The y flag affects a regular expression search's sticky property, and it tells t
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > stickyRegex.js
+$ cat > stickyRegex.js <<EOF
 let text = "hello1 hello2 hello3",
     pattern = /hello\d\s?/,
     result = pattern.exec(text),
@@ -207,7 +207,7 @@ stickyResult = stickyPattern.exec(text);
 console.log(stickyResult[0], stickyPattern.lastIndex);
 stickyResult = stickyPattern.exec(text);
 console.log(stickyResult[0], stickyPattern.lastIndex);
-^C
+EOF
 $ node stickyRegex.js
 hello1
 hello1
@@ -252,10 +252,10 @@ In ES5 the following code duplicates a regular expression:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > es5regexDuplicateOk.js
+$ cat > es5regexDuplicateOk.js <<EOF
 var re1 = /ab/i,
     re2 = new RegExp(re1);
-^C
+EOF
 $ node es5regexDuplicateOk.js
 $
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
@@ -266,13 +266,13 @@ The following code is legal in ES6 but not in ES5:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > regexDuplicate.js
+$ cat > regexDuplicate.js <<EOF
 var re1 = /ab/i,
     re2 = new RegExp(re1, "g");
 
 console.log(re1.toString());
 console.log(re2.toString());
-^C
+EOF
 $ node regexDuplicate.js
 /ab/i
 /ab/g
@@ -285,11 +285,11 @@ ES6 allows you to read the flags of a regular expression using a getter:
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > flags.js
+$ cat > flags.js <<EOF
 var re = /ab/g;
 console.log(re.source);
 console.log(re.flags);
-^C
+EOF
 $ node flags.js
 ab
 g
@@ -311,12 +311,12 @@ The simplest use of string literals is to create string using backtics instead s
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > string.js
+$ cat > string.js <<EOF
 let text = `Hello world!`;
 console.log(text);
 console.log(typeof text);
 console.log(text.length);
-^C
+EOF
 $ node string.js
 Hello world!
 string
@@ -333,7 +333,7 @@ When using single or double quotes for strings, the string must be contained on 
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > multilineES5.js
+$ cat > multilineES5.js <<EOF
 let text1 = "hello \
 world";
 
@@ -342,7 +342,7 @@ let text2 = "1st line \n\
 
 console.log(text1);
 console.log(text2);
-^C
+EOF
 $ node multilineES5.js
 hello world
 1st line
@@ -355,14 +355,14 @@ The second string in example above SHOULD print out 2 lines on all major JS engi
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > multilineES5_array.js
+$ cat > multilineES5_array.js <<EOF
 let arr = [
 	"1st line",
 	"2nd line",
 	"3rd line"
 ];
 console.log(arr.join("\n"));
-^C
+EOF
 $ node multilineES5_array.js
 1st line
 2nd line
@@ -374,7 +374,7 @@ E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > multilineString.js
+$ cat > multilineString.js <<EOF
 let text1 = `1st line
 2nd line`;
 
@@ -391,7 +391,7 @@ console.log(text2.length);
 
 console.log(text3);
 console.log(text3.length);
-^C
+EOF
 $ node multilineString.js
 1st line
 2nd line
@@ -412,12 +412,12 @@ Substitutions are delimited by an opening '${' and a closing '}' that can have a
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > substitution.js
+$ cat > substitution.js <<EOF
 let name = "Nicholas",
     message = `Hello, ${name}.`;
 
 console.log(message);
-^C
+EOF
 $ node substitution.js
 Hello, Nicholas.
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
@@ -432,7 +432,7 @@ Substitutions can be any JS expressions. Since template literals are also JS exp
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > substitutions.js
+$ cat > substitutions.js <<EOF
 let count = 10,
     price = 0.25,
     message = `${count} items cost $${(count * price).toFixed(2)}.`;
@@ -446,7 +446,7 @@ let name = "Nicholas",
         }.`;
 
 console.log(greeting);
-^C
+EOF
 $ node substitutions.js
 10 items cost $2.50.
 Hello, my name is Nicholas.
@@ -462,7 +462,7 @@ A tag is simply a function that is called with the processed template literal da
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > tag.js
+$ cat > tag.js <<EOF
 function myTag(literals, ...substitutions) {
 	console.log('literals:');
 	literals.forEach(
@@ -477,7 +477,7 @@ function myTag(literals, ...substitutions) {
 let count = 10,
     price = 0.25,
     message = myTag`${count} items cost $${(count * price).toFixed(2)}.`;
-^C
+EOF
 $ node tag.js
 literals:
 
@@ -499,12 +499,12 @@ Template tags also have access to raw string information, which primarily means 
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > raw.js
+$ cat > raw.js <<EOF
 let text = "Multiline\nstring";
 console.log(text);
 console.log(String.raw`${text}`);
 console.log(String.raw`1st line\n2nd line`);
-^C
+EOF
 $ node raw.js
 Multiline
 string
@@ -519,7 +519,7 @@ The raw string information is also passed into template tags. The 1st fragment i
 .RS -20
 .nf
 S_/;T_/;A_/;R_/;T_/;T_/;E_/;R_/;M_/;I_/;N_/;A_/;L_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
-$ cat > rawTag.js
+$ cat > rawTag.js <<EOF
 function raw(literals, ...substitutions) {
 	let result = '';
 	for (let i = 0; i < substitutions.length; ++i) {
@@ -537,7 +537,7 @@ console.log(message.length);
 
 console.log('Multiline\\nstring');
 console.log('Multiline\\nstring'.length);
-^C
+EOF
 $ node rawTag.js
 Multiline\nstring
 17
