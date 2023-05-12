@@ -242,6 +242,14 @@ __replace_source_file () {
 	sed -i '' 's|.SOURCE_FILE|.SH "______ Download complete source file ___________________________________________"\n.SOURCE_FILE_LINK|' $_blog_post_path
 }
 
+debug () {
+	cp $1 temp
+	__v2_to_v1 temp
+	__make_html temp
+	sed -i 's|\.\./\.||' temp.html
+	chromium temp.html
+}
+
 if [ "$OS" = "Linux" ]; then
 	declare -a _funcs=$(echo "\
 		__replace_highlight \

@@ -1,0 +1,471 @@
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+"PROJECTPLACEHOLDER"
+.POST_TITLE
+"POSTPLACEHOLDER"
+.POST_DESCRIPTION
+"DESCRIPTIONPLACEHOLDER"
+.HEADER_BODY_SEPARATOR
+.HEADER_PRIMARY
+pForth
+.PARAGRAPH
+Going through the book I am using pForth unless specified otherwise.
+.START_TERMINAL_SECTION
+$ type forth
+forth is aliased to `/home/sergei/pforth/platforms/unix/pforth_standalone'
+.END_SECTION
+.PARAGRAPH
+Below is an example of running pForth interactively, CTRL+d to exit.
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+1    ok
+Stack<10> 1 
+2    ok
+Stack<10> 1 2 
+3    ok
+Stack<10> 1 2 3 
++ + . CR 6 
+   ok
+Stack<10> 
+$
+.END_SECTION
+.PARAGRAPH
+Same forth program can ran from file.
+.START_TERMINAL_SECTION
+$ cat > test.fth <<EOF
+1
+2
+3
++ + . CR
+EOF
+$ forth -q test.fth
+6
+.END_SECTION
+.HEADER_PRIMARY
+A Living Language
+.PARAGRAPH
+Forth lets you organize your own procedures and communicate them to computer in by:
+.LIST_ITEM_ORDERED
+defining useful tasks and giving each task a name, then
+.LIST_ITEM_ORDERED
+group related tasks together into larger tasks and give each of these a name, and so on.
+.PARAGRAPH
+An example of the method above is defining a program for a washing machine. In the following code, the colon denotes a begining of a "definition", semicolon indicates its end.
+.START_INFO_SECTION
+: WASHER   WASH SPIN RINSE SPIN;
+: RINSE   FILL AGITATE DRAIN;
+: FILL   FAUCETS OPEN TILL-FULL FAUCETS CLOSE;
+.END_SECTION
+.LIST_ITEM_ORDERED
+"WASHER" defines 4 different cycles of the washing process in order left-to-right.
+.LIST_ITEM_ORDERED
+"RINSE" defines 3 actions in order.
+.LIST_ITEM_ORDERED
+"FILL" definition references things (faucets) and actions (open, close). The word TILL-FULL was created to define a "delay loop" that ends when the tub is full.
+.PARAGRAPH
+If Forth a "definition" is called a "word". The "x-bit" memory volume usually known as "word" is called a "cell" in Forth.
+.HEADER_PRIMARY
+All This and ... Interactive!
+.START_TERMINAL_SECTION
+$ cat > letter_F.fth <<EOF
+: STAR   42 EMIT ;
+: STARS   0 DO STAR LOOP ;
+: MARGIN   CR 30 SPACES ;
+: BLIP   MARGIN STAR ;
+: BAR   MARGIN 5 STARS ;
+: F   BAR BLIP BAR BLIP BLIP ;
+F CR
+EOF
+$ forth -q letter_F.fth 
+
+                              *****
+                              *
+                              *****
+                              *
+                              *
+.END_SECTION
+.PARAGRAPH
+A brief explanation of the script above:
+.LIST_ITEM_ORDERED
+"STAR" uses the already defined word "EMIT" to print to the screen the character with an ascii value of 42.
+.LIST_ITEM_ORDERED
+"STARS" uses "DO" and "LOOP" to create a loop where each iteration executes STAR.
+.LIST_ITEM_ORDERED
+"MARGIN" executes CR (carriage return) to start a new line in outpu and print 30 space characters using SPACES.
+.LIST_ITEM_ORDERED
+"BLIP" uses "MARGIN" to print a margin of 30 spaces and then pring a single * using STAR.
+.LIST_ITEM_ORDERED
+"BAR" does the same as "BLIP" but prints 5 asterisk characters, not one.
+.LIST_ITEM_ORDERED
+"F" prints the capital letter F by printing a BAR then a BLIP and so on.
+.LIST_ITEM_ORDERED
+The last line of the script runs words "F" and "CR", in that order. "F" is defined on previous line.
+.HEADER_PRIMARY
+The Dictionary
+.PARAGRAPH
+Each new word you define is added to Forths "dictionary" where other words already contained, such as CR and EMIT. The process of taking the new definition and writing them to the dictionary is called "compiling". Execution of a word is done by activating the INTERPRET word:
+.LIST_ITEM_ORDERED
+The interpreter scands the input for tokens separated by spaces.
+.LIST_ITEM_ORDERED
+A token is looked up in the dictionary.
+.LIST_ITEM_ORDERED
+If a definition exists, it is passed to the EXECUTE word, which executes the definition.
+.LIST_ITEM_ORDERED
+If the interpreter did not find a definition, it calls the number-runner (NUMBER).
+.LIST_ITEM_ORDERED
+If the passed token is indeed a number, NUMBER stores it in temporary storage for numbers.
+.LIST_ITEM_ORDERED
+If the token is not a number (and has no definition) a question mark will be printed.
+.PARAGRAPH
+The colon character is used when defining new words, the semicolon is a word in Forth and the following happens:
+.LIST_ITEM_ORDERED
+The interpreter find the colon in the input.
+.LIST_ITEM_ORDERED
+EXECUTE passes the new word definiotion to EXECUTE.
+.LIST_ITEM_ORDERED
+The compiler translates the definition into dictionary form and writes is to dictionary.
+.LIST_ITEM_ORDERED
+When the compiler gets the semicolon, it stops.
+.LIST_ITEM_ORDERED
+Execution is returned to the interpreter, "ok" is returned.
+.HEADER_PRIMARY
+Say What?
+.PARAGRAPH
+In Forth, a word is a character or group of characters that have a definition. Here are the characters that can not be used is a naming a word:
+.LIST_ITEM_UNORDERED
+return - signals end of input.
+.LIST_ITEM_UNORDERED
+backspace - used for input editing.
+.LIST_ITEM_UNORDERED
+space - used as input delimiter.
+.LIST_ITEM_UNORDERED
+caret - will be discussed in chapter 3.
+.PARAGRAPH
+The following words name consists of two punctuation marks. The name is pronounced "dot-quote" and it is written as
+.START_INFO_HIGHLIGHT
+."
+.END_HIGHLIGHT.
+This word can be used inside definitions to type a "string" of text to the terminal.
+.START_TERMINAL_SECTION
+$ cat > dot_quote_test.fth <<EOF
+: GREET   ." Hello, I speak Forth " CR ;
+GREET
+EOF
+$ forth -q dot_quote_test.fth
+Hello, I speak Forth 
+.END_SECTION
+.PARAGRAPH
+The quotation mark at the end marks the end of the text and won't be typed. It's called a "delimiter".
+.HEADER_PRIMARY
+The Stack: FORTH's Worksite for Arithmetic
+.PARAGRAPH
+Here is an example of doing arithmetics with Forth:
+.START_TERMINAL_SECTION
+$ cat > arithmetics.fth <<EOF
+3 4 + . CR
+EOF
+$ forth -q arithmetics.fth
+7
+.END_SECTION
+.PARAGRAPH
+In the example above, the numbers 3 and 4 are "pushed onto the stack", by
+.START_INFO_HIGHLIGHT
+NUMBER
+.END_HIGHLIGHT
+, and then the operation works on the numbers.
+.PARAGRAPH
+In Forth, there is one central location where numbers are temporarily stored before being operated on, the "stack".In the example above,
+.START_INFO_HIGHLIGHT
+NUMBER
+.END_HIGHLIGHT
+pushes 3 onto the stack. Then
+.START_INFO_HIGHLIGHT
+NUMBER
+.END_HIGHLIGHT
+pushes 4 onto the stack. 4 goes on the "top" of the stack with 3 "below" it. The next word in the example is
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+which can be found in the dictionary.
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+is defined to "take the top two numbers off the stack, add them, and push the result back onto the stack". The following word
+.START_INFO_HIGHLIGHT
+.
+.END_HIGHLIGHT
+(dot) is also found in the dictionary. It has been defined to "take the number off the stack and print it at the terminal".
+the numbers 3 and 4 are "pushed onto the stack", by
+.START_INFO_HIGHLIGHT
+NUMBER
+.END_HIGHLIGHT
+, and then the operation works on the numbers.
+.HEADER_PRIMARY
+Postfix Power
+.PARAGRAPH
+The last example demonstrated how to calculate "3+4". The expression "3 4 +" convey the same meaning as "3+4" but is written in the "postfix" notation. Unlike the "infix" (3+4). Forth uses postfix notation to put numbers on the stack before executing words that need them.
+.HEADER_SECONDARY
+Examples:
+.LIST_ITEM_UNORDERED
+the word
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+gets two numbers from the stack and adds them
+.LIST_ITEM_UNORDERED
+the word
+.START_INFO_HIGHLIGHT
+.
+.END_HIGHLIGHT
+gets one number from the stack and prints it to terminal
+.LIST_ITEM_UNORDERED
+the word
+.START_INFO_HIGHLIGHT
+SPACES
+.END_HIGHLIGHT
+gets one number from the stack and prints that many space-characters
+.LIST_ITEM_UNORDERED
+the word
+.START_INFO_HIGHLIGHT
+EMIT
+.END_HIGHLIGHT
+gets one a number that represents a character and prints the character
+.PARAGRAPH
+when all operators are defined to work on the values that are already on the stack, interactions between many operations remain simple even when the program gets complex.
+.PARAGRAPH
+Forth lets you execute a word in either two ways: by simply naming it, or by putting it in the definition of another word and naming that word. Postfix is part of what makes this possible.
+.PARAGRAPH
+For example, lets define a word that will add the number 4 to whatever number is on the stack:
+.START_TERMINAL_SECTION
+$ cat > example.fth <<EOF
+: FOUR-MORE   4 + ;
+3 FOUR-MORE . CR
+-10 FOUR-MORE . CR
+EOF
+$ forth -q example.fth
+7
+-6
+.END_SECTION
+.PARAGRAPH
+The "4" inside the definition goes onto the stack. Then the
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+adds the two numbers on the stack. Since
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+always works on the stack, it doesn't matter that the "4" came from inside the definition and the "3" and "-10" from outside.
+.HEADER_PRIMARY
+Keep Track of Your Stack
+.PARAGRAPH
+Forth's stack is described as "last-in, first-out" (LIFO). In general, the only accessible value at any given tiem is the top value. This can be demonstrated by the
+.START_INFO_HIGHLIGHT
+.
+.END_HIGHLIGHT
+word. It removes the top number from the stack and prints is:
+.START_TERMINAL_SECTION
+$ cat > stack.fth <<EOF
+2 4 6 8 . . . . CR
+EOF
+$ forth -q stack.fth
+8 6 4 2
+.END_SECTION
+.PARAGRAPH
+The system reads input from left to right. Numbers are added to the stack when encountered, words are executed. Since "8" was the last number added to the stack, it is the stacks top and will be the 1st to be removed.
+.PARAGRAPH
+If we try and remove a number from and empty stack we will encounter a "Stack underflow!" error message, not "ok". 
+.PARAGRAPH
+The dot always prints whatever is on the top, so if there is nothing on the stack, it prints whatever is just below the stack, which is usually zero. Only then is the error detected; the offending word (in this case dot) is returned to the screen, followed by the "error message".
+.PARAGRAPH
+The opposite condition, when the stack completely fills up, is called "stack overflow". The stack is so deep, however, that this condition should never occur except when you've done something wrong.
+.PARAGRAPH
+It's important to keep track of new words' "stack effects"; that is, the sort of numbers a word needs to have on the stack before you execute it, and the sort of numbers it will leave on the stack afterwards.
+.PARAGRAPH
+If you maintain a list of your newly created words with their meanings as you go, you or anyone else can easily understand the words' operations. In Forth, such a list is called a "glossary".
+.PARAGRAPH
+To communicate stack effects in a visual way, Forth programmers conventionally use a special stack notation in their glossaries or tables of words. Here is the basic form:
+.START_INFO_SECTION
+(before -- after)
+.END_SECTION
+.PARAGRAPH
+The dash separates the things that should be on the stack, before the word is executed, from the things that will be left there afterwards. For example, here's the stack notation for the dot word:
+.START_INFO_SECTION
+\[char46]   (n -- )
+.END_SECTION
+.PARAGRAPH
+(The letter "n" stands for "number") This shows that
+.START_INFO_HIGHLIGHT
+.
+.END_HIGHLIGHT
+expects one number on the stack and leaves no number on the stack.
+.PARAGRAPH
+Here's the stack notation for the word
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+:
+.START_INFO_SECTION
++   (n1 n2 -- sum)
+.END_SECTION
+.PARAGRAPH
+When there is more than one n, we number them n1, n2, n3, etc., consecutively. The numbers 1 and 2 do not refer to position on the stack. Stack position is indicated by the order in which the items are written. The rightmost item, on either side of the dash, is the topmost item on each stack. For example, in the stack notation of
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+, the n2 is on the top.
+.PARAGRAPH
+Here's a list of the Forth words you've learned so far, including their stack notations ("n" stands for number; "c" stands for character):
+.START_INFO_SECTION
+: xxx   yyy ;    ( -- )              Create a new definition with the name xxx,
+                                     consisting of word or words yyy.
+                                     
+CR               ( -- )              Performs a carriage return and line feed
+                                     at your terminal.
+                                     
+SPACES           (n -- )             Prints the given number of blank spaces at
+                                     your terminal.
+                                     
+SPACE            ( -- )              Prints one blank space at your terminal.
+                                     
+EMIT             (c -- )             Transmits a character to the output device.
+                                     
+." xxx"          ( -- )              Prints the character string xxx at your
+                                     terminal. The " character terminates the
+                                     string.
+                                     
++                (n1 n2 -- sum)      Adds.
+                                     
+.                (n -- )             Prints a number, followed by one space.
+.END_SECTION
+.HEADER_PRIMARY
+Review of Terms
+.LIST_ITEM_UNORDERED
+Compile - to generate a dictionary entry in computer memory from source text (the written-out form of a definition). Distinct from "execute".
+.LIST_ITEM_UNORDERED
+Dictionary - in Forth, a list of words and definitions including both "systems" definitions (predifined) and "user" definitions (which you invent). A dictionary resided in the computer memory in compiled form.
+.LIST_ITEM_UNORDERED
+Execute - to perform. Specifically, to execute a word is to perform the operations specified in the compiled definition of the word.
+.LIST_ITEM_UNORDERED
+Extensibility - a characteristic of a computer language which allows a programmer to add new features of modify existing ones.
+.LIST_ITEM_UNORDERED
+Glossary - a list of words defined in Forth, showing their stack effects and an explanation of what they do, which serves as a reference for programmers.
+.LIST_ITEM_UNORDERED
+Infix notation - the method of writing operators between the operands they affect, as in "2 + 5"
+.LIST_ITEM_UNORDERED
+Input stream - the text to be read by the text interpreter. This may be text that you have just typed in at your terminal, or it may be text that is stored on disk.
+.LIST_ITEM_UNORDERED
+Interpreter - (when referring to Forth's text interpreter) to read the input stream, then to find each word in the dictionary or, failing that, to convert it to a number.
+.LIST_ITEM_UNORDERED
+LIFO - (last-in, first-out) the type of stack which Forth uses. A can of tennis balls is a LIFO structure; the last ball you drop in is the one you must remove first.
+.LIST_ITEM_UNORDERED
+Postfix notation - the method of writing oprators after the operands they affect, as in "2 5 +" for "2 + 5". Also known as Reverse Polish Notation.
+.LIST_ITEM_UNORDERED
+Stack - in Forth, a region of memory which is controlled in such a way that data can be stored or removed in a last-in, first-out (LIFO) fashion.
+.LIST_ITEM_UNORDERED
+Stack overflow - the error condition that occurs when the entire area of memory allowed for the stack is completely filled with data.
+Stack underflow - the error condition that occurs when an operation expects a value on the stack, but there is no valid data on the stack.
+.LIST_ITEM_UNORDERED
+Word - in Forth, the name of a definition.
+.HEADER_PRIMARY
+Problems
+.HEADER_SECONDARY
+Problem #1
+.PARAGRAPH
+Define a word called GIFT which when executed, will type out the name of some gift. For example:
+.START_INFO_SECTION
+: GIFT   ." BOOKENDS " ;
+.END_SECTION
+.PARAGRAPH
+Now define a word called GIVER which will print out a person's first name. Finally, define a word called THANKS which includes the new Forth words GIFT and GIVER, and prints out a message something like this:
+.START_INFO_SECTION
+DEAR STEPHANIE,
+    THANKS FOR THE BOOKENDS.
+.END_SECTION
+.HEADER_SECONDARY
+Solution #1
+.START_TERMINAL_SECTION
+$ cat > sol01.fth <<EOF
+: GIFT   ." BOOKENDS. " ;
+: GIVER   ." STEPHANIE, " ;
+: THANKS   CR ." DEAR " GIVER CR 4 SPACES ." THANKS FOR THE " GIFT CR ;
+THANKS
+EOF
+$ forth -q sol01.fth
+
+DEAR STEPHANIE, 
+    THANKS FOR THE BOOKENDS. 
+.END_SECTION
+.HEADER_SECONDARY
+Problems #2
+.PARAGRAPH
+Define a word called TEN.LESS which takes a number on the stack, subtracts ten, and returns the answer on the stack. (Hint: you can use
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+).
+.HEADER_SECONDARY
+Solution #2
+.START_TERMINAL_SECTION
+$ cat > sol02.fth <<EOF
+: TEN.LESS   -10 + ;
+7 TEN.LESS . CR
+14 TEN.LESS . CR
+47 TEN.LESS . CR
+EOF
+$ forth -q sol02.fth
+-3 
+4 
+37 
+.END_SECTION
+.HEADER_SECONDARY
+Problems #3
+.PARAGRAPH
+After entering the word in Problem #1, enter a new definition for GIVER to print someone else's name, then execute THANKS again. Can you explain why THANKS still prints out the first giver's name?
+.HEADER_SECONDARY
+Solution #3
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: GIFT   ." BOOKENDS. " ;    ok
+Stack<10> 
+: GIVER   ." STEPHANIE, " ;    ok
+Stack<10> 
+: THANKS   CR ." DEAR " GIVER CR 4 SPACES ." THANKS FOR THE " GIFT CR ;    ok
+Stack<10> 
+THANKS 
+DEAR STEPHANIE, 
+    THANKS FOR THE BOOKENDS. 
+   ok
+Stack<10> 
+: GIVER   ." CHUCK, " ; GIVER redefined.
+   ok
+Stack<10> 
+THANKS 
+DEAR STEPHANIE, 
+    THANKS FOR THE BOOKENDS. 
+   ok
+Stack<10> 
+: THANKS   CR ." DEAR " GIVER CR 4 SPACES ." THANKS FOR THE " GIFT CR ; THANKS redefined.
+   ok
+Stack<10> 
+THANKS 
+DEAR CHUCK, 
+    THANKS FOR THE BOOKENDS. 
+   ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+When GIVER was defined again with the new name, a message was printed:
+.START_INFO_HIGHLIGHT
+GIVER redifined.
+.END_HIGHLIGHT
+Executing THANKS again resulted in the old message. Reapeating the THANKS definition without any changes, but with a redefined GIVER, resulted in the same
+.START_INFO_HIGHLIGHT
+GIVER redifined.
+.END_HIGHLIGHT
+message. Excuting THANKS resulted in message with the new name.
