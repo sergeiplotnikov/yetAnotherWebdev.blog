@@ -1,0 +1,510 @@
+<html><head><link rel="stylesheet" href="../../styles.css"></head><body><pre>
+<b>yet_another_webdev(blog)           2023-07-28           yet_another_webdev(blog)</b>
+
+<b>PROJECT</b>
+       Starting FORTH
+
+<b>POST</b>
+       Chapter 01 - Fundamental FORTH
+
+<b>DESCRIPTION</b>
+       Using  pForth  to go over the 1st chapter. Covering the basics of syntax,
+       interpreter and the stack.
+
+
+
+
+<b>pForth</b>
+       Going through the book I am using pForth unless specified otherwise.
+
+</pre><pre class="terminal">
+$ type forth
+forth is aliased to ‘/home/sergei/pforth/platforms/unix/pforth_standalone'
+       </pre><pre>
+
+       Below is an example of running pForth interactively, CTRL+d to exit.
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+1    ok
+Stack&lt;10> 1
+2    ok
+Stack&lt;10> 1 2
+3    ok
+Stack&lt;10> 1 2 3
++ + . CR 6
+   ok
+Stack&lt;10>
+$
+       </pre><pre>
+
+       Same forth program can ran from file.
+
+</pre><pre class="terminal">
+$ cat > test.fth &lt;&lt;EOF
+1
+2
+3
++ + . CR
+EOF
+$ forth -q test.fth
+6
+       </pre><pre>
+
+<b>A Living Language</b>
+       Forth lets you organize your  own  procedures  and  communicate  them  to
+       computer in by:
+
+       1.     defining useful tasks and giving each task a name, then
+
+       2.     group  related  tasks  together into larger tasks and give each of
+              these a name, and so on.
+
+       An example of the method above  is  defining  a  program  for  a  washing
+       machine.  In  the  following  code,  the  colon  denotes  a begining of a
+       "definition", semicolon indicates its end.
+
+</pre><pre class="info">
+: WASHER   WASH SPIN RINSE SPIN;
+: RINSE   FILL AGITATE DRAIN;
+: FILL   FAUCETS OPEN TILL-FULL FAUCETS CLOSE;
+       </pre><pre>
+
+       1.     "WASHER" defines 4 different cycles  of  the  washing  process  in
+              order left-to-right.
+
+       2.     "RINSE" defines 3 actions in order.
+
+       3.     "FILL"  definition  references things (faucets) and actions (open,
+              close). The word TILL-FULL was created to define  a  "delay  loop"
+              that ends when the tub is full.
+
+       If  Forth  a  "definition"  is called a "word". The "x-bit" memory volume
+       usually known as "word" is called a "cell" in Forth.
+
+<b>All This and ... Interactive!</b>
+</pre><pre class="terminal">
+$ cat > letter_F.fth &lt;&lt;EOF
+: STAR   42 EMIT ;
+: STARS   0 DO STAR LOOP ;
+: MARGIN   CR 30 SPACES ;
+: BLIP   MARGIN STAR ;
+: BAR   MARGIN 5 STARS ;
+: F   BAR BLIP BAR BLIP BLIP ;
+F CR
+EOF
+$ forth -q letter_F.fth
+
+                              *****
+                              *
+                              *****
+                              *
+                              *
+       </pre><pre>
+
+       A brief explanation of the script above:
+
+       1.     "STAR" uses the already defined word "EMIT" to print to the screen
+              the character with an ascii value of 42.
+
+       2.     "STARS" uses "DO" and "LOOP" to create a loop where each iteration
+              executes STAR.
+
+       3.     "MARGIN" executes CR (carriage return) to  start  a  new  line  in
+              outpu and print 30 space characters using SPACES.
+
+       4.     "BLIP" uses "MARGIN" to print a margin of 30 spaces and then pring
+              a single * using STAR.
+
+       5.     "BAR"  does  the  same as "BLIP" but prints 5 asterisk characters,
+              not one.
+
+       6.     "F" prints the capital letter F by printing a BAR then a BLIP  and
+              so on.
+
+       7.     The  last  line  of  the  script  runs words "F" and "CR", in that
+              order. "F" is defined on previous line.
+
+<b>The Dictionary</b>
+       Each new word you define is added  to  Forths  "dictionary"  where  other
+       words  already  contained, such as CR and EMIT. The process of taking the
+       new definition and writing them to the dictionary is called  "compiling".
+       Execution of a word is done by activating the INTERPRET word:
+
+       1.     The interpreter scands the input for tokens separated by spaces.
+
+       2.     A token is looked up in the dictionary.
+
+       3.     If  a  definition  exists, it is passed to the EXECUTE word, which
+              executes the definition.
+
+       4.     If the interpreter did not find a definition, it calls the number-
+              runner (NUMBER).
+
+       5.     If the passed token is  indeed  a  number,  NUMBER  stores  it  in
+              temporary storage for numbers.
+
+       6.     If  the  token  is not a number (and has no definition) a question
+              mark will be printed.
+
+       The colon character is used when defining new words, the semicolon  is  a
+       word in Forth and the following happens:
+
+       1.     The interpreter find the colon in the input.
+
+       2.     EXECUTE passes the new word definiotion to EXECUTE.
+
+       3.     The  compiler  translates  the definition into dictionary form and
+              writes is to dictionary.
+
+       4.     When the compiler gets the semicolon, it stops.
+
+       5.     Execution is returned to the interpreter, "ok" is returned.
+
+<b>Say What?</b>
+       In Forth, a word is a character  or  group  of  characters  that  have  a
+       definition.  Here  are  the characters that can not be used is a naming a
+       word:
+
+       •      return - signals end of input.
+
+       •      backspace - used for input editing.
+
+       •      space - used as input delimiter.
+
+       •      caret - will be discussed in chapter 3.
+
+       The following words name consists of two punctuation marks. The  name  is
+       pronounced  "dot-quote"  and it is written as <span class="info">." </span>.  This word can be used
+       inside definitions to type a "string" of text to the terminal.
+
+</pre><pre class="terminal">
+$ cat > dot_quote_test.fth &lt;&lt;EOF
+: GREET   ." Hello, I speak Forth " CR ;
+GREET
+EOF
+$ forth -q dot_quote_test.fth
+Hello, I speak Forth
+       </pre><pre>
+
+       The quotation mark at the end marks the end of  the  text  and  won't  be
+       typed. It's called a "delimiter".
+
+<b>The Stack: FORTH's Worksite for Arithmetic</b>
+       Here is an example of doing arithmetics with Forth:
+
+</pre><pre class="terminal">
+$ cat > arithmetics.fth &lt;&lt;EOF
+3 4 + . CR
+EOF
+$ forth -q arithmetics.fth
+7
+       </pre><pre>
+
+       In the example above, the numbers 3 and 4 are "pushed onto the stack", by
+       <span class="info">NUMBER </span>, and then the operation works on the numbers.
+
+       In  Forth,  there  is  one central location where numbers are temporarily
+       stored before being operated on, the "stack".In the example above, <span class="info">NUMBER
+       </span>pushes 3 onto the stack. Then <span class="info">NUMBER </span>pushes 4 onto the stack. 4 goes on
+       the "top" of the stack with 3 "below" it. The next word in the example is
+       <span class="info">+ </span>which can be found in the dictionary. <span class="info">+ </span>is defined to "take  the  top
+       two  numbers  off  the stack, add them, and push the result back onto the
+       stack". The following word <span class="info">. </span>(dot) is also found in the  dictionary.  It
+       has  been  defined  to "take the number off the stack and print it at the
+       terminal".  the numbers 3 and 4 are "pushed onto the stack", by <span class="info">NUMBER </span>,
+       and then the operation works on the numbers.
+
+<b>Postfix Power</b>
+       The last example demonstrated how to calculate "3+4". The expression "3 4
+       +" convey the same meaning as "3+4"  but  is  written  in  the  "postfix"
+       notation.  Unlike  the  "infix" (3+4). Forth uses postfix notation to put
+       numbers on the stack before executing words that need them.
+
+   <b>Examples:</b>
+       •      the word <span class="info">+ </span>gets two numbers from the stack and adds them
+
+       •      the word <span class="info">. </span>gets one number  from  the  stack  and  prints  it  to
+              terminal
+
+       •      the  word  <span class="info">SPACES  </span>gets one number from the stack and prints that
+              many space-characters
+
+       •      the word <span class="info">EMIT </span>gets one a number that represents a  character  and
+              prints the character
+
+       when  all operators are defined to work on the values that are already on
+       the stack, interactions between many operations remain simple  even  when
+       the program gets complex.
+
+       Forth lets you execute a word in either two ways: by simply naming it, or
+       by  putting  it  in  the definition of another word and naming that word.
+       Postfix is part of what makes this possible.
+
+       For example, lets define a word that will add the number  4  to  whatever
+       number is on the stack:
+
+</pre><pre class="terminal">
+$ cat > example.fth &lt;&lt;EOF
+: FOUR-MORE   4 + ;
+3 FOUR-MORE . CR
+-10 FOUR-MORE . CR
+EOF
+$ forth -q example.fth
+7
+-6
+       </pre><pre>
+
+       The  "4"  inside the definition goes onto the stack. Then the <span class="info">+ </span>adds the
+       two numbers on the stack. Since <span class="info">+ </span>always works on the stack, it  doesn't
+       matter that the "4" came from inside the definition and the "3" and "-10"
+       from outside.
+
+<b>Keep Track of Your Stack</b>
+       Forth's  stack  is  described as "last-in, first-out" (LIFO). In general,
+       the only accessible value at any given tiem is the top value. This can be
+       demonstrated by the <span class="info">. </span>word. It removes the top number from the stack and
+       prints is:
+
+</pre><pre class="terminal">
+$ cat > stack.fth &lt;&lt;EOF
+2 4 6 8 . . . . CR
+EOF
+$ forth -q stack.fth
+8 6 4 2
+       </pre><pre>
+
+       The system reads input from left to right. Numbers are added to the stack
+       when encountered, words are executed. Since "8" was the last number added
+       to the stack, it is the stacks top and will be the 1st to be removed.
+
+       If we try and remove a number from and empty stack we  will  encounter  a
+       "Stack underflow!" error message, not "ok".
+
+       The  dot  always prints whatever is on the top, so if there is nothing on
+       the stack, it prints whatever is just below the stack, which  is  usually
+       zero.  Only  then is the error detected; the offending word (in this case
+       dot) is returned to the screen, followed by the "error message".
+
+       The opposite condition, when the stack completely  fills  up,  is  called
+       "stack  overflow".  The  stack  is  so deep, however, that this condition
+       should never occur except when you've done something wrong.
+
+       It's important to keep track of new words' "stack effects"; that is,  the
+       sort  of numbers a word needs to have on the stack before you execute it,
+       and the sort of numbers it will leave on the stack afterwards.
+
+       If you maintain a list of your newly created words with their meanings as
+       you go, you or anyone else can easily understand the  words'  operations.
+       In Forth, such a list is called a "glossary".
+
+       To   communicate  stack  effects  in  a  visual  way,  Forth  programmers
+       conventionally use a special stack notation in their glossaries or tables
+       of words. Here is the basic form:
+
+</pre><pre class="info">
+(before -- after)
+       </pre><pre>
+
+       The dash separates the things that should be on  the  stack,  before  the
+       word is executed, from the things that will be left there afterwards. For
+       example, here's the stack notation for the dot word:
+
+</pre><pre class="info">
+.   (n -- )
+       </pre><pre>
+
+       (The  letter  "n"  stands  for  "number")  This shows that <span class="info">. </span>expects one
+       number on the stack and leaves no number on the stack.
+
+       Here's the stack notation for the word <span class="info">+ </span>:
+
+</pre><pre class="info">
++   (n1 n2 -- sum)
+       </pre><pre>
+
+       When there is more  than  one  n,  we  number  them  n1,  n2,  n3,  etc.,
+       consecutively. The numbers 1 and 2 do not refer to position on the stack.
+       Stack  position is indicated by the order in which the items are written.
+       The rightmost item, on either side of the dash, is the  topmost  item  on
+       each  stack.  For example, in the stack notation of <span class="info">+ </span>, the n2 is on the
+       top.
+
+       Here's a list of the Forth words you've learned so far,  including  their
+       stack notations ("n" stands for number; "c" stands for character):
+
+</pre><pre class="info">
+: xxx   yyy ;    ( -- )              Create a new definition with the name xxx,
+                                     consisting of word or words yyy.
+
+CR               ( -- )              Performs a carriage return and line feed
+                                     at your terminal.
+
+SPACES           (n -- )             Prints the given number of blank spaces at
+                                     your terminal.
+
+SPACE            ( -- )              Prints one blank space at your terminal.
+
+EMIT             (c -- )             Transmits a character to the output device.
+
+." xxx"          ( -- )              Prints the character string xxx at your
+                                     terminal. The " character terminates the
+                                     string.
+
++                (n1 n2 -- sum)      Adds.
+
+.                (n -- )             Prints a number, followed by one space.
+       </pre><pre>
+
+<b>Review of Terms</b>
+       •      Compile  -  to generate a dictionary entry in computer memory from
+              source text (the written-out form of a definition). Distinct  from
+              "execute".
+
+       •      Dictionary  -  in Forth, a list of words and definitions including
+              both "systems" definitions  (predifined)  and  "user"  definitions
+              (which you invent). A dictionary resided in the computer memory in
+              compiled form.
+
+       •      Execute  -  to  perform.  Specifically,  to  execute  a word is to
+              perform the operations specified in the compiled definition of the
+              word.
+
+       •      Extensibility - a characteristic  of  a  computer  language  which
+              allows a programmer to add new features of modify existing ones.
+
+       •      Glossary  -  a list of words defined in Forth, showing their stack
+              effects and an explanation of what they  do,  which  serves  as  a
+              reference for programmers.
+
+       •      Infix  notation  -  the  method  of  writing operators between the
+              operands they affect, as in "2 + 5"
+
+       •      Input stream - the text to be read by the text  interpreter.  This
+              may  be  text  that you have just typed in at your terminal, or it
+              may be text that is stored on disk.
+
+       •      Interpreter - (when referring to Forth's text interpreter) to read
+              the input stream, then to find each word  in  the  dictionary  or,
+              failing that, to convert it to a number.
+
+       •      LIFO  - (last-in, first-out) the type of stack which Forth uses. A
+              can of tennis balls is a LIFO structure; the last ball you drop in
+              is the one you must remove first.
+
+       •      Postfix notation -  the  method  of  writing  oprators  after  the
+              operands  they  affect,  as  in "2 5 +" for "2 + 5". Also known as
+              Reverse Polish Notation.
+
+       •      Stack - in Forth, a region of memory which is controlled in such a
+              way that data can be stored or removed  in  a  last-in,  first-out
+              (LIFO) fashion.
+
+       •      Stack  overflow  - the error condition that occurs when the entire
+              area of memory allowed for the stack  is  completely  filled  with
+              data.   Stack  underflow - the error condition that occurs when an
+              operation expects a value on the stack, but there is no valid data
+              on the stack.
+
+       •      Word - in Forth, the name of a definition.
+
+<b>Problems</b>
+   <b>Problem #1</b>
+       Define a word called GIFT which when executed, will type out the name  of
+       some gift. For example:
+
+</pre><pre class="info">
+: GIFT   ." BOOKENDS " ;
+       </pre><pre>
+
+       Now  define  a  word  called  GIVER which will print out a person's first
+       name. Finally, define a word called THANKS which includes the  new  Forth
+       words GIFT and GIVER, and prints out a message something like this:
+
+</pre><pre class="info">
+DEAR STEPHANIE,
+    THANKS FOR THE BOOKENDS.
+       </pre><pre>
+
+   <b>Solution #1</b>
+</pre><pre class="terminal">
+$ cat > sol01.fth &lt;&lt;EOF
+: GIFT   ." BOOKENDS. " ;
+: GIVER   ." STEPHANIE, " ;
+: THANKS   CR ." DEAR " GIVER CR 4 SPACES ." THANKS FOR THE " GIFT CR ;
+THANKS
+EOF
+$ forth -q sol01.fth
+
+DEAR STEPHANIE,
+    THANKS FOR THE BOOKENDS.
+       </pre><pre>
+
+   <b>Problems #2</b>
+       Define  a  word  called  TEN.LESS  which  takes  a  number  on the stack,
+       subtracts ten, and returns the answer on the stack. (Hint: you can use <span class="info">+ </span>
+       ).
+
+   <b>Solution #2</b>
+</pre><pre class="terminal">
+$ cat > sol02.fth &lt;&lt;EOF
+: TEN.LESS   -10 + ;
+7 TEN.LESS . CR
+14 TEN.LESS . CR
+47 TEN.LESS . CR
+EOF
+$ forth -q sol02.fth
+-3
+4
+37
+       </pre><pre>
+
+   <b>Problems #3</b>
+       After entering the word in Problem #1, enter a new definition  for  GIVER
+       to  print someone else's name, then execute THANKS again. Can you explain
+       why THANKS still prints out the first giver's name?
+
+   <b>Solution #3</b>
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: GIFT   ." BOOKENDS. " ;    ok
+Stack&lt;10>
+: GIVER   ." STEPHANIE, " ;    ok
+Stack&lt;10>
+: THANKS   CR ." DEAR " GIVER CR 4 SPACES ." THANKS FOR THE " GIFT CR ;    ok
+Stack&lt;10>
+THANKS
+DEAR STEPHANIE,
+    THANKS FOR THE BOOKENDS.
+   ok
+Stack&lt;10>
+: GIVER   ." CHUCK, " ; GIVER redefined.
+   ok
+Stack&lt;10>
+THANKS
+DEAR STEPHANIE,
+    THANKS FOR THE BOOKENDS.
+   ok
+Stack&lt;10>
+: THANKS   CR ." DEAR " GIVER CR 4 SPACES ." THANKS FOR THE " GIFT CR ; THANKS redefined.
+   ok
+Stack&lt;10>
+THANKS
+DEAR CHUCK,
+    THANKS FOR THE BOOKENDS.
+   ok
+Stack&lt;10>
+       </pre><pre>
+
+       When GIVER was defined again with the new name, a  message  was  printed:
+       <span class="info">GIVER  redifined.  </span> Executing  THANKS again resulted in the old message.
+       Repeating the THANKS definition without any changes, but with a redefined
+       GIVER, resulted in the same <span class="info">GIVER redifined. </span> message.  Excuting  THANKS
+       resulted in message with the new name.
+
+toolsV2                                                 yet_another_webdev(blog)
+</pre></body></html>

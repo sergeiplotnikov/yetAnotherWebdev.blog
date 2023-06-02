@@ -215,6 +215,12 @@ __remove_escapes () {
 	col -bx
 }
 
+__remove_underline () {
+	if [ "$OS" = "Linux" ]; then
+		sed 's|\[4m||g' | sed 's|\[24m||g'
+	fi
+}
+
 __complete_html () {
 	awk -f $PROJECT_FOLDER/tools/v1/complete_html.awk
 }
@@ -235,7 +241,7 @@ __make_html () {
 	else
 		DESTINATION="$2.html"
 	fi
-	__set_escapes $1 | __diagrams | __less_than | __links | __groff | __links2 | __pre_tags | __headers | __lists | __remove_escapes | __complete_html > $DESTINATION
+	__set_escapes $1 | __diagrams | __less_than | __links | __groff | __links2 | __pre_tags | __headers | __lists | __remove_underline | __remove_escapes | __complete_html > $DESTINATION
 }
 
 __add_post_entry () {

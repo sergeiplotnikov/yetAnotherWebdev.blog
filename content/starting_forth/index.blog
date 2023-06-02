@@ -1,0 +1,15 @@
+.TH "yet_another_webdev" "blog" "" "toolsV2" ""
+.nh
+.SH "Project title:"
+Starting FORTH
+.SH "Description:"
+Reading the 1st edition, 1981, of "Starting FORTH - An Introduction to the FORTH Language and Operating System for Beginners and Professionals" by Leo Brodie. Running examples using pForth on Arch Linux.
+.SH "Posts:"
+.SS "2023-07-28"
+.PP
+L_/;I_/;N_/;K_/;./230728180315083643661_starting_forth_ch01.htmlL_/;I_/;N_/;K_/;Chapter 01 - Fundamental FORTHL_/;I_/;N_/;K_/;?"
+.PP
+Using pForth to go over the 1st chapter. Covering the basics of syntax, interpreter and the stack.
+.sp
+.SS ""
+

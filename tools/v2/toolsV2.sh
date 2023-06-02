@@ -93,6 +93,7 @@ __replace_placeholders () {
 }
 __v2_to_v1 () {
 	local _blog_post_path=$1
+	__replace_dot $_blog_post_path
 	__replace_highlight $_blog_post_path
 	__replace_page_layout $_blog_post_path
 	__replace_project_title $_blog_post_path
@@ -142,7 +143,7 @@ __replace_source_title () {
 	local _blog_post_path=$1
 	local _line_numbers_string=$(grep -n ".SOURCE_TITLE" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
 	declare -a _line_numbers=($(echo $_line_numbers_string))
-	for _current in $_line_numbers
+	for _current in "${_line_numbers[@]}"
 	do
 		sed -i '' -E "$(($_current + 1))"'s/^(.*)/\"\1\"/' $_blog_post_path
 	done
@@ -152,7 +153,7 @@ __replace_source_link () {
 	local _blog_post_path=$1
 	local _line_numbers_string=$(grep -n ".SOURCE_LINK" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
 	declare -a _line_numbers=($(echo $_line_numbers_string))
-	for _current in $_line_numbers
+	for _current in "${_line_numbers[@]}"
 	do
 		sed -i '' -E "$(($_current + 1))"'s|^(.*)|L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;|' $_blog_post_path
 	done
@@ -177,7 +178,7 @@ __replace_list_item_ordered () {
 	local _line_numbers_string=$(grep -n ".LIST_ITEM_ORDERED" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
 	declare -a _line_numbers=($(echo $_line_numbers_string))
 	local _next_index=1
-	for _current in $_line_numbers
+	for _current in "${_line_numbers[@]}"
 	do
 		sed -i '' -E "$_current"'s|^(.*)|.TP .B '"$_next_index"'.|' $_blog_post_path
 		sed "$(($_current + 2))"'!d' $_blog_post_path | grep ".LIST_ITEM_ORDERED" > /dev/null
@@ -193,7 +194,7 @@ __replace_list_item_unordered () {
 	local _blog_post_path=$1
 	local _line_numbers_string=$(grep -n ".LIST_ITEM_UNORDERED" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
 	declare -a _line_numbers=($(echo $_line_numbers_string))
-	for _current in $_line_numbers
+	for _current in "${_line_numbers[@]}"
 	do
 		sed -i '' -E "$_current"'s|^(.*)|.IP \\(bu|' $_blog_post_path
 		sed "$(($_current + 2))"'!d' $_blog_post_path | grep ".LIST_ITEM_UNORDERED" > /dev/null
@@ -203,7 +204,7 @@ __replace_link () {
 	local _blog_post_path=$1
 	local _line_numbers_string=$(grep -n ".LINK" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
 	declare -a _line_numbers=($(echo $_line_numbers_string))
-	for _current in $_line_numbers
+	for _current in "${_line_numbers[@]}"
 	do
 		sed -i '' -E "$(($_current + 1))"'s|^(.*)|L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;\1L_/;I_/;N_/;K_/;?|' $_blog_post_path
 	done
@@ -213,7 +214,7 @@ __replace_source_file_link () {
 	local _blog_post_path=$1
 	local _line_numbers_string=$(grep -n ".LINK" $_blog_post_path| awk -v FS=':' -v ORS=',' '{ print $1 }' | sed 's/,$//' | tr ',' ' ')
 	declare -a _line_numbers=($(echo $_line_numbers_string))
-	for _current in $_line_numbers
+	for _current in "${_line_numbers[@]}"
 	do
 		sed -i '' -E "$(($_current + 1))""s|^(.*)|L_/;I_/;N_/;K_/;$URL/source/\1L_/;I_/;N_/;K_/;$URL/source/\1L_/;I_/;N_/;K_/;?|" $_blog_post_path
 	done
@@ -242,16 +243,24 @@ __replace_source_file () {
 	sed -i '' 's|.SOURCE_FILE|.SH "______ Download complete source file ___________________________________________"\n.SOURCE_FILE_LINK|' $_blog_post_path
 }
 
+__replace_dot () {
+	local _blog_post_path=$1
+	sed -i '' 's|^\.DOT|\\\[char46\]|' $_blog_post_path
+}
+
 debug () {
 	cp $1 temp
 	__v2_to_v1 temp
 	__make_html temp
-	sed -i 's|\.\./\.||' temp.html
-	chromium temp.html
+	sed -i '' 's|\.\./\.||' temp.html
+	if [ "$OS" = "Linux" ]; then
+		chromium temp.html
+	fi
 }
 
 if [ "$OS" = "Linux" ]; then
 	declare -a _funcs=$(echo "\
+		__replace_dot \
 		__replace_highlight \
 		__replace_page_layout \
 		__replace_project_title \
@@ -270,6 +279,7 @@ if [ "$OS" = "Linux" ]; then
 		__replace_paragraph \
 		__replace_section \
 		__replace_source_file \
+		debug \
 	")
 	for _func in $_funcs
 	do

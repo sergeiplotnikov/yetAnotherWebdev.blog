@@ -1,11 +1,11 @@
 .PAGE_LAYOUT
-"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+"yet_another_webdev" "blog" "" "toolsV2" "2023-07-28"
 .PROJECT_TITLE
-"PROJECTPLACEHOLDER"
+Starting FORTH
 .POST_TITLE
-"POSTPLACEHOLDER"
+Chapter 01 - Fundamental FORTH
 .POST_DESCRIPTION
-"DESCRIPTIONPLACEHOLDER"
+Using pForth to go over the 1st chapter. Covering the basics of syntax, interpreter and the stack.
 .HEADER_BODY_SEPARATOR
 .HEADER_PRIMARY
 pForth
@@ -195,7 +195,7 @@ which can be found in the dictionary.
 .END_HIGHLIGHT
 is defined to "take the top two numbers off the stack, add them, and push the result back onto the stack". The following word
 .START_INFO_HIGHLIGHT
-.
+.DOT
 .END_HIGHLIGHT
 (dot) is also found in the dictionary. It has been defined to "take the number off the stack and print it at the terminal".
 the numbers 3 and 4 are "pushed onto the stack", by
@@ -218,7 +218,7 @@ gets two numbers from the stack and adds them
 .LIST_ITEM_UNORDERED
 the word
 .START_INFO_HIGHLIGHT
-.
+.DOT
 .END_HIGHLIGHT
 gets one number from the stack and prints it to terminal
 .LIST_ITEM_UNORDERED
@@ -264,7 +264,7 @@ Keep Track of Your Stack
 .PARAGRAPH
 Forth's stack is described as "last-in, first-out" (LIFO). In general, the only accessible value at any given tiem is the top value. This can be demonstrated by the
 .START_INFO_HIGHLIGHT
-.
+.DOT
 .END_HIGHLIGHT
 word. It removes the top number from the stack and prints is:
 .START_TERMINAL_SECTION
@@ -294,12 +294,12 @@ To communicate stack effects in a visual way, Forth programmers conventionally u
 .PARAGRAPH
 The dash separates the things that should be on the stack, before the word is executed, from the things that will be left there afterwards. For example, here's the stack notation for the dot word:
 .START_INFO_SECTION
-\[char46]   (n -- )
+.DOT   (n -- )
 .END_SECTION
 .PARAGRAPH
 (The letter "n" stands for "number") This shows that
 .START_INFO_HIGHLIGHT
-.
+.DOT
 .END_HIGHLIGHT
 expects one number on the stack and leaves no number on the stack.
 .PARAGRAPH
@@ -333,13 +333,13 @@ SPACE            ( -- )              Prints one blank space at your terminal.
                                      
 EMIT             (c -- )             Transmits a character to the output device.
                                      
-." xxx"          ( -- )              Prints the character string xxx at your
+.DOT" xxx"          ( -- )              Prints the character string xxx at your
                                      terminal. The " character terminates the
                                      string.
                                      
 +                (n1 n2 -- sum)      Adds.
                                      
-.                (n -- )             Prints a number, followed by one space.
+.DOT                (n -- )             Prints a number, followed by one space.
 .END_SECTION
 .HEADER_PRIMARY
 Review of Terms
@@ -464,7 +464,7 @@ When GIVER was defined again with the new name, a message was printed:
 .START_INFO_HIGHLIGHT
 GIVER redifined.
 .END_HIGHLIGHT
-Executing THANKS again resulted in the old message. Reapeating the THANKS definition without any changes, but with a redefined GIVER, resulted in the same
+Executing THANKS again resulted in the old message. Repeating the THANKS definition without any changes, but with a redefined GIVER, resulted in the same
 .START_INFO_HIGHLIGHT
 GIVER redifined.
 .END_HIGHLIGHT
