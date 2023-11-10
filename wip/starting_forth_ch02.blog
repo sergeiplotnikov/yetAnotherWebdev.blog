@@ -1,0 +1,627 @@
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+"PROJECTPLACEHOLDER"
+.POST_TITLE
+Chapter 02 - How to get results
+.POST_DESCRIPTION
+"DESCRIPTIONPLACEHOLDER"
+.HEADER_BODY_SEPARATOR
+.HEADER_PRIMARY
+FORTH Arithmetic -- Calculator Style
+.PARAGRAPH
+Here are four simples integer-arithmetic operators in FORHT:
+.START_INFO_SECTION
++      (n1 n2 -- sum)            Adds.                    pronounced "plus"
+
+-      (n1 n2 -- diff)           Subtracts (n1 - n2).     pronounced "minus"
+
+*      (n1 n2 -- prod)           Multiplies.              pronounced "star"
+
+/      (n1 n2 -- qout)           Divides (n1/n2).         pronounced "slash"
+.END_SECTION
+.PARAGRAPH
+In the first chapter, we learned that we can add two number by putting them both on the stack, then executing the word
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+, then finnaly executing the word
+.START_INFO_HIGHLIGHT
+.DOT
+.END_HIGHLIGHT
+to get the result printed at our terminal.
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+17 5 + . 22    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+We can use thie method with all of FORTH's arithmetic operators. In other words, we can use FORTH like a calculator to get answers, event without writing a "program". Try a multiplication problem:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+7 8 * . 56    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+By now we've see that the operator comes after the numbers. In the case of subtraction and division, though, we must also consider the order of numbers ("7 - 4" is not the same as "4 - 7").
+.PARAGRAPH
+Just remember this rule: To convert to postfix, simple move the operator to the end of the expression:
+.START_INFO_SECTION
+Infix				Postfix
+
+3 + 4				3 4 +
+
+500 - 300			500 300 -
+
+6 X 5				6 5 *
+
+20 /  4				20 4 /
+
+.END_SECTION
+.PARAGRAPH
+So to do this subtraction problem:
+.START_INFO_HIGHLIGHT
+7 - 4 =
+.END_HIGHLIGHT
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+7 4 - . 3    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Example of division:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+20 4 - . 5    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+What do you do if you have more that one operator in an expression, like:
+.START_INFO_HIGHLIGHT
+4 + (17 * 12)
+.END_HIGHLIGHT
+you ask? Let's take it step-by-step: the parentheses tell you to first multiply 17 by 12, then add 4. So in FORTH you would write:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+17 12 * 4 + . 208    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+17 and 12 go onto the stack. 
+.START_INFO_HIGHLIGHT
+*
+.END_HIGHLIGHT
+miltiplies them and returns the result to the stack. Then the 4 goes onto the stack, on top of 204.
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+adds the two numbers returning 208 to the stack.
+.PARAGRAPH
+No there's an interesting problem:
+.START_INFO_HIGHLIGHT
+(3 + 9) * (4 + 6)
+.END_HIGHLIGHT
+.PARAGRAPH
+To solve it  we have to add 3 to 9 first, then add 4 to 6, then finally multiply the two sums. In FORTH, we can write:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+3 9 + 4 6 + * . 120    ok
+Stack<10> 
+.END_SECTION
+.HEADER_PRIMARY
+For Adventuresome Newcomers Sitting at a Terminal
+.PARAGRAPH
+If you're on of those people who likes to fool around and figure things out for themselves without reading the book, then you're bount to discover a copule of weird things. First off, as we told you, these operators are
+.START_INFO_HIGHLIGHT
+integer operators
+.END_HIGHLIGHT.
+That not only means that you can't do calculations with decimal values, like
+.START_INFO_SECTION
+10.00 2.25 +
+.END_SECTION
+.PARAGRAPH
+if also means that you van only get integer results, as in
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+21 4 / . 5    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Another thing is that if you try to multiply:
+.START_INFO_SECTION
+10000 10 *
+.END_SECTION
+.PARAGRAPH
+or some suck large numbers, you'll get a crazy answer. So we're telling you up front that with the operators introduced so far and with
+.START_INFO_HIGHLIGHT
+.DOT
+.END_HIGHLIGHT
+to print the results, you can't have any numbers that are higher than 32767 and lower than -32768. Numbers within this range are called "single-lenght signed numbers".
+.PARAGRAPH
+Notice, in the list of FORTH words a few pages back, the letter "n", which stands for "number". Since FORTH uses single-length numbers more often than other types of numbers, the "n" signifies that the number must be single-length. And yes, there are other operators that extend this range ("double-length" operatores, which are indicated by "d").
+.HEADER_SECONDARY
+pForth integers
+.PARAGRAPH
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+1024 1024 1024 4 1024 1024 1024 * * * * * *    ok
+Stack<10> 4611686018427387904 
+.END_SECTION
+.PARAGRAPH
+The result of 1024 x 1024 x 1024 x 4 x 1024 x 1024 x 1024 is 2^62 which is 1 followed by 62 zeroes.
+.START_INFO_SECTION
+1 -    ok
+Stack<10> 4611686018427387903 
+.END_SECTION
+.PARAGRAPH
+Subtracting 1 from 2^62, (2^62 - 1), is 0 followed by 62 ones.
+.START_INFO_SECTION
+1024 1024 1024 4 1024 1024 1024 * * * * * *    ok
+Stack<10> 4611686018427387903 4611686018427387904 
+.END_SECTION
+.PARAGRAPH
+The number 2^62 added to the stack.
+.START_INFO_SECTION
++    ok
+Stack<10> 9223372036854775807 
+.END_SECTION
+.PARAGRAPH
+Adding the two numbers results in 2^63 - 1 which is 0 followed by 63 ones.
+.START_INFO_SECTION
+1 +    ok
+Stack<10> -9223372036854775808 
+.END_SECTION
+.PARAGRAPH
+Adding 1 results in 2^63 which is 1 followed by 63 zeroes. The value on the stack is the minumum value for a signed 64-bit integer.
+.HEADER_PRIMARY
+FORTH Arithmetic -- Definition Style
+.PARAGRAPH
+In chpater #1 we saw that we could define new words in terms of numbers and other pre-defined words. Let's explore some further possibilities, usign some of our newly-learned math operators.
+.PARAGRAPH
+Let's say we want to convert various measurements to inches. We know that
+.START_INFO_HIGHLIGHT
+1 yard = 36 inches
+.END_HIGHLIGHT
+and
+.START_INFO_HIGHLIGHT
+1 foot = 12 inches
+.END_HIGHLIGHT
+so we can define these two words where the names symbolize "yards-to-inches" and "feet-to-inches". Here' what they do:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: YARDS>IN   36 * ;    ok
+Stack<10> 
+: FT>IN   12 * ;    ok
+Stack<10> 
+10 YARDS>IN . 360    ok
+Stack<10> 
+2 FT>IN . 24    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+If we always want our result to be in inches, we can do the following:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: YARDS 36 * ;    ok
+Stack<10> 
+: FEET   12 * ;    ok
+Stack<10> 
+: INCHES ;    ok
+Stack<10> 
+10 YARDS 2 FEET 9 INCHES + + . 393    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Notice that the word
+.START_INFO_HIGHLIGHT
+INCHES
+.END_HIGHLIGHT
+doesn't do anything except remind the human user what the 9 is there for. If we really want to get fancy, we can add these three definitions:
+.START_INFO_SECTION
+: YARD YARDS ;    ok
+Stack<10> 
+: FOOT   FEET ;    ok
+Stack<10> 
+: INCH ;    ok
+Stack<10> 
+1 YARD 2 FEET 1 INCH + + . 61    ok
+Stack<10> 
+2 YARDS 1 FOOT + . 84    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+So far we have only defined words whose definitions contain a single math operator. But it's perfectly possible to put many operators inside a definition, if that's what you need to do.
+.PARAGRAPH
+Let's say we want a word that computes the sum of five numbers on the stack. A few pages back we summed five numbers like this:
+.START_INFO_HIGHLIGHT
+17 20 + 132 + 3 + 9 + . 181    ok
+.END_HIGHLIGHT
+But we ca also enter
+.START_INFO_HIGHLIGHT
+17 20 132 3 9 + + + + . 181    ok
+.END_HIGHLIGHT
+We get the same answer, even though we've clustered all the numbers into one group and all operators into another group. We can write out definition like this:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: 5#SUM   + + + + ;    ok
+Stack<10> 
+17 20 132 3 9 5#SUM . 181    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+If we were going to keep
+.START_INFO_HIGHLIGHT
+5#SUM
+.END_HIGHLIGHT
+for future use, we could enter it into our ever-growing glossary, along with a note that it "expects five arguments" on the stack, which it will add together.
+.PARAGRAPH
+Here's another equation to write a definition for:
+.START_INFO_HIGHLIGHT
+(a + b) * c
+.END_HIGHLIGHT
+Thus we would write the following definition, this will work as long as we make sure to push the numbers to the stack in the proper order:
+.START_INFO_SECTION
+: SOLUTION  + * ;
+c a b SOLUTION
+.END_SECTION
+.HEADER_PRIMARY
+The Division Operators
+.PARAGRAPH
+The word
+.START_INFO_HIGHLIGHT
+/
+.END_HIGHLIGHT
+is FORTH'S simplest division operator. Slash supplies only the quotient; any remainder is lost:
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+22 4 / . 5    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+If you're thinking of a pocket calculator's per-cent operator, then five is not the full answers.
+.PARAGRAPH
+But
+.START_INFO_HIGHLIGHT
+/
+.END_HIGHLIGHT
+is only one of several division operators supplied by FORTH to give you the flexability to tell the computer exactly what you want it to do.
+.PARAGRAPH
+For example, let's say you want to solve this problem: "How many dollar bills can I get in exchange for 22 quarters". The real answer, of course, is exactly 5, not 5.5. A computerized money changer, for example, would not know howto give you 5.5 dollar bills.
+.PARAGRAPH
+Here are two more FORTH division operators:
+.START_INFO_SECTION
+/MOD   (u1 u2 -- u-rem u-quot)   Divides. Returns the     pronounced "slash-mod"
+                                 remainder and the
+                                 quotient.
+
+MOD    (u1 u2 -- u-rem)          Returns the remainder    pronounced "mod"
+                                 from division.
+.END_SECTION
+.PARAGRAPH
+The "u" stands for "unsigned". We'll see what this means in the chapter on cumputer numbers. For now though, it means that the numbers can't be negative.
+.PARAGRAPH
+.START_INFO_HIGHLIGHT
+/MOD
+.END_HIGHLIGHT
+gives both the remainder and quotient;
+.START_INFO_HIGHLIGHT
+MOD
+.END_HIGHLIGHT
+gives the remainder only. (For 
+.START_INFO_HIGHLIGHT
+/MOD
+.END_HIGHLIGHT
+, the stack notation in the table indicates that the quotient will be on the top of the stack, and the remainder below. Remember, the rightmost represents the topmost).
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+22 4 /MOD . . 5 2    ok
+Stack<10> 
+: QUARTERS   4 /MOD . ." ONES AND " . ." QUARTERS " ;    ok
+Stack<10> 
+22 QUARTERS 5 ONES AND 2 QUARTERS    ok
+Stack<10> 
+.END_SECTION
+.HEADER_PRIMARY
+Stack Maneuvers
+.PARAGRAPH
+If you worked Prob. 6 int the last set, you discovered that the infix equation
+.START_INFO_HIGHLIGHT
+(a - b)/c
+.END_HIGHLIGHT
+cannot be solved with a definition unless there is some way to rearrange values on the stack.
+.PARAGRAPH
+Well, there is a way: by using a "stack manipulation operator" called
+.START_INFO_HIGHLIGHT
+SWAP
+.END_HIGHLIGHT
+.PARAGRAPH
+The word
+.START_INFO_HIGHLIGHT
+SWAP
+.END_HIGHLIGHT
+is defined to switch the order of the top two stack items. As with other stack manipulation operators, you can test
+.START_INFO_HIGHLIGHT
+SWAP
+.END_HIGHLIGHT
+at your terminal in "calculator style"; that is, it doesn't have to be contained within a definition. Using
+.START_INFO_HIGHLIGHT
+SWAP
+.END_HIGHLIGHT
+we can define a solution for
+.START_INFO_HIGHLIGHT
+(a - b)/c
+.END_HIGHLIGHT
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+1 2 . . 2 1    ok
+Stack<10> 
+1 2 SWAP . . 1 2    ok
+Stack<10> 
+: SOLVE6b   - SWAP / ;    ok
+Stack<10> 
+2 10 4 SOLVE6b . 3    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Here is a list of several stack manipulation operators, including
+.START_INFO_HIGHLIGHT
+SWAP
+.END_HIGHLIGHT
+.DOT
+.START_INFO_SECTION
+SWAP   (n1 n2 -- n2 n1)          Reverse the top two      pronounced "swap"
+                                 stack items.
+
+DUP    (n -- n n)                Duplicates the top       pronounced "dupe"
+                                 stack items.
+
+OVER   (n1 n2 -- n1 n2 n1)       Makes a copy of the      pronounced "over"
+                                 second item and pushes
+                                 it on the top.
+
+ROT    (n1 n2 n3 -- n2 n3 n1)    Rotates the third item   pronounced "rote"
+                                 to the top.
+
+DROP   (n -- )                   Discards the top stack   pronounced "drop"
+                                 item.
+.END_SECTION
+.HEADER_SECONDARY
+DUP operator
+.PARAGRAPH
+the next stack manipulation operator on the list,
+.START_INFO_HIGHLIGHT
+DUP
+.END_HIGHLIGHT
+, simply makes a second copy (duplicated) of the top stack item. For example, if we have "a" on the stack, we can compute a^2 as follows
+.START_INFO_SECTION
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+3    ok
+Stack<10> 3 
+DUP * . 9    ok
+.END_SECTION
+.HEADER_SECONDARY
+OVER operator
+Now somebody tells you to evaluate the expression:
+.START_INFO_HIGHLIGHT
+a * (a + b)
+.END_HIGHLIGHT
+given the following stack order:
+.START_INFO_HIGHLIGHT
+(a b -- )
+.END_HIGHLIGHT
+But, you say, I'm going to need a new manipulation operator: I want two copies of the "a", and the "a" is under the "b". Here's the word you need:
+.START_INFO_HIGHLIGHT
+OVER
+.END_HIGHLIGHT
+.DOT
+.START_INFO_HIGHLIGHT
+OVER
+.END_HIGHLIGHT
+simply makes a copy of the "a" and leapfrogss it over the "b":
+.START_INFO_HIGHLIGHT
+(a b -- a b a)
+.END_HIGHLIGHT
+.DOT The expression
+.START_INFO_HIGHLIGHT
+a * (a + b)
+.END_HIGHLIGHT
+can be solved with:
+.START_INFO_HIGHLIGHT
+OVER + *
+.END_HIGHLIGHT
+.PARAGRAPH
+When writing equations in FORTH, it's best to "factor them out" firts. For example, if somebody asks you to evaluate:
+.START_INFO_HIGHLIGHT
+a^2 + a*b
+.END_HIGHLIGHT
+is FORTH, you'll find it quite complicated (and maybe even impossible) using the words we've introduced so for ... unless you factor out the expression to read:
+.START_INFO_HIGHLIGHT
+a * (a + b)
+.END_HIGHLIGHT
+which is the expression we just evalutated.
+.HEADER_SECONDARY
+ROT operator
+.PARAGRAPH
+The fourth stack manipulator on the list is
+.START_INFO_HIGHLIGHT
+ROT
+.END_HIGHLIGHT
+(pronounced "rote"), which is short for "rotate". Here's what
+.START_INFO_HIGHLIGHT
+ROT
+.END_HIGHLIGHT
+does to the top three stack values:
+.START_INFO_HIGHLIGHT
+(a b c -- b c a)
+.END_HIGHLIGHT
+.PARAGRAPH
+For example, if we need to evaluate the expression:
+.START_INFO_HIGHLIGHT
+ab - bc
+.END_HIGHLIGHT
+we should first factor out the "b"s:
+.START_INFO_HIGHLIGHT
+b * (a - c)
+.END_HIGHLIGHT
+Now if our starting-stack order is this:
+.START_INFO_HIGHLIGHT
+(c b a -- )
+.END_HIGHLIGHT
+we can use:
+.START_INFO_HIGHLIGHT
+ROT - *
+.END_HIGHLIGHT
+.HEADER_SECONDARY
+DROP operator
+.PARAGRAPH
+The final stack manipulation operator on the list is
+.START_INFO_HIGHLIGHT
+DROP
+.END_HIGHLIGHT
+.DOT All it does is discard the top stack value.
+.HEADER_SECONDARY
+A Handy Hint
+.PARAGRAPH
+Use the word
+.START_INFO_HIGHLIGHT
+.DOTS
+.END_HIGHLIGHT
+for a non-destructive stack print. This will print the state of the current stack without removing the values from it.
+.HEADER_PRIMARY
+Playing Doubles
+.PARAGRAPH
+The next four stack manipulation operators should look vaguely familiar:
+.START_INFO_SECTION
+2SWAP  (d1 d2 -- d2 d1)          Reverse the top two      pronounced "two-swap"
+                                 pairs of numbers.
+
+2DUP   (d -- d d)                Duplicates the top       pronounced "two-dupe"
+                                 pair of numbers.
+
+2OVER  (d1 d2 -- d1 d2 d1)       Makes a copy of the      pronounced "two-over"
+                                 second pair of numbers
+                                 and pushes it on top.
+
+2DROP  (d -- )                   Discards the top pair    pronounced "two-drop"
+                                 of numbers.
+.END_SECTION
+.PARAGRAPH
+the prefix "2" indicates that these stack manipulation operators handle numbers in pairs. The letter "d" in the stack effects column stands for "double". "Double" has a special significance that we will discuss when we discess "n" and "u".
+.PARAGRAPH
+The "2"-manipulators listed above are so straightforward, we won't even bore you with examples.
+.PARAGRAPH
+One more thing: there are still some stack manipulators we haven't talked about yet, so don't go crazy by trying too much fancy footwork on the stack.
+.HEADER_PRIMARY
+FORTH words covered in this chpater:
+.START_INFO_SECTION
++      (n1 n2 -- sum)            Adds.                    pronounced "plus"
+
+-      (n1 n2 -- diff)           Subtracts (n1 - n2).     pronounced "minus"
+
+*      (n1 n2 -- prod)           Multiplies.              pronounced "star"
+
+/      (n1 n2 -- qout)           Divides (n1/n2).         pronounced "slash"
+
+/MOD   (u1 u2 -- u-rem u-quot)   Divides. Returns the     pronounced "slash-mod"
+                                 remainder and the
+                                 quotient.
+
+MOD    (u1 u2 -- u-rem)          Returns the remainder    pronounced "mod"
+                                 from division.
+
+SWAP   (n1 n2 -- n2 n1)          Reverse the top two      pronounced "swap"
+                                 stack items.
+
+DUP    (n -- n n)                Duplicates the top       pronounced "dupe"
+                                 stack items.
+
+OVER   (n1 n2 -- n1 n2 n1)       Makes a copy of the      pronounced "over"
+                                 second item and pushes
+                                 it on the top.
+
+ROT    (n1 n2 n3 -- n2 n3 n1)    Rotates the third item   pronounced "rote"
+                                 to the top.
+
+DROP   (n -- )                   Discards the top stack   pronounced "drop"
+                                 item.
+
+2SWAP  (d1 d2 -- d2 d1)          Reverse the top two      pronounced "two-swap"
+                                 pairs of numbers.
+
+2DUP   (d -- d d)                Duplicates the top       pronounced "two-dupe"
+                                 pair of numbers.
+
+2OVER  (d1 d2 -- d1 d2 d1)       Makes a copy of the      pronounced "two-over"
+                                 second pair of numbers
+                                 and pushes it on top.
+
+2DROP  (d -- )                   Discards the top pair    pronounced "two-drop"
+                                 of numbers.
+.END_SECTION
+.HEADER_PRIMARY
+Review of Terms
+.HEADER_SECONDARY
+Double-length numbers
+.PARAGRAPH
+integers which encompass a range of over -2 billion to +2 billion (and which we'll introduce officially in Chapter 7).
+.HEADER_SECONDARY
+Single-length numbers
+.PARAGRAPH
+integers which fall within the rane of -32768 to +32767: the only numbers which are valid as the arguments or results of any of the operators we've discussed so far. (This seemingly arbitrary range comes from the way computers are designed, as we'll see later on.)
+.HEADER_PRIMARY
+Problems
+.HEADER_SECONDARY
+Problem #1
+.PARAGRAPH
+What is the difference between
+.START_INFO_HIGHLIGHT
+DUP DUP
+.END_HIGHLIGHT
+and
+.START_INFO_HIGHLIGHT
+2DUP
+.END_HIGHLIGHT
+?
+.HEADER_SECONDARY
+Solution #1
+.HEADER_SECONDARY
+Problem #2
+.PARAGRAPH
+Write a phrase which will reverse the order of the top four items on the stack; that is,
+.START_INFO_HIGHLIGHT
+(1 2 3 4 -- 4 3 2 1)
+.END_HIGHLIGHT
+.HEADER_SECONDARY
+Solution #2
+.PARAGRAPH
+.START_INFO_HIGHLIGHT
