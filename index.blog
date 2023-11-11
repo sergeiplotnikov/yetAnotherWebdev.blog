@@ -18,7 +18,7 @@ __      _____| |__   __| | _____   __    | |__ | | ___   __ _
                                                         |___/ 
 E_/;N_/;D_/;S_/;E_/;C_/;T_/;I_/;O_/;N_/;.
 .SH "Projects:"
-.SS "Last update: 2023-07-28 -- 1 posts"
+.SS "Last update: 2023-12-15 -- 2 posts"
 .PP
 L_/;I_/;N_/;K_/;./content/starting_forth/index.htmlL_/;I_/;N_/;K_/;Starting FORTHL_/;I_/;N_/;K_/;?"
 .PP
@@ -31,6 +31,12 @@ L_/;I_/;N_/;K_/;./content/understanding_es6/index.htmlL_/;I_/;N_/;K_/;Understand
 Going over the 2016 book by Nicholas C. Zakas to get a better picture of ES6 features.
 .sp
 .SH "Posts:"
+.SS "2023-12-15"
+.PP
+L_/;I_/;N_/;K_/;./content/starting_forth/231215161845089183755_starting_forth_ch02.htmlL_/;I_/;N_/;K_/;Starting FORTH - Chapter 02 - How to get resultsL_/;I_/;N_/;K_/;?"
+.PP
+Forth arithmetics and stack manipulation words
+.sp
 .SS "2023-07-28"
 .PP
 L_/;I_/;N_/;K_/;./content/starting_forth/230728180315083643661_starting_forth_ch01.htmlL_/;I_/;N_/;K_/;Starting FORTH - Chapter 01 - Fundamental FORTHL_/;I_/;N_/;K_/;?"

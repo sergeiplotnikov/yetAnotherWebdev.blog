@@ -1,11 +1,11 @@
 .PAGE_LAYOUT
-"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+"yet_another_webdev" "blog" "" "toolsV2" "2023-12-15"
 .PROJECT_TITLE
-"PROJECTPLACEHOLDER"
+Starting FORTH
 .POST_TITLE
 Chapter 02 - How to get results
 .POST_DESCRIPTION
-"DESCRIPTIONPLACEHOLDER"
+Forth arithmetics and stack manipulation words
 .HEADER_BODY_SEPARATOR
 .HEADER_PRIMARY
 FORTH Arithmetic -- Calculator Style
@@ -160,35 +160,37 @@ pForth integers
 $ forth
 PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
 
-1024 1024 1024 4 1024 1024 1024 * * * * * *    ok
-Stack<10> 4611686018427387904 
+: 2^10   1024 ;    ok
+Stack<10> 
 .END_SECTION
 .PARAGRAPH
-The result of 1024 x 1024 x 1024 x 4 x 1024 x 1024 x 1024 is 2^62 which is 1 followed by 62 zeroes.
+Define the word 2^10 to put 1024 (which is 2 to the 10th power) on the stack.
 .START_INFO_SECTION
-1 -    ok
-Stack<10> 4611686018427387903 
+: 2^62   2^10 2^10 2^10 2^10 2^10 2^10 2 2 * * * * * * * ;    ok
+Stack<10> 
 .END_SECTION
 .PARAGRAPH
-Subtracting 1 from 2^62, (2^62 - 1), is 0 followed by 62 ones.
+2^62 is 1 followed by 62 0s.
 .START_INFO_SECTION
-1024 1024 1024 4 1024 1024 1024 * * * * * *    ok
-Stack<10> 4611686018427387903 4611686018427387904 
+: 2^62-1   2^62 1 - ;    ok
+Stack<10> 
 .END_SECTION
 .PARAGRAPH
-The number 2^62 added to the stack.
+Subtracting 1 from 2^62 is 0 followed by 62 1s.
 .START_INFO_SECTION
-+    ok
+: 2^63-1   2^62 2^62-1 + ;    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Adding the two numbers results in 2^63 - 1 which is 0 followed by 63 1s.
+.START_INFO_SECTION
+2^63-1    ok
 Stack<10> 9223372036854775807 
-.END_SECTION
-.PARAGRAPH
-Adding the two numbers results in 2^63 - 1 which is 0 followed by 63 ones.
-.START_INFO_SECTION
 1 +    ok
 Stack<10> -9223372036854775808 
 .END_SECTION
 .PARAGRAPH
-Adding 1 results in 2^63 which is 1 followed by 63 zeroes. The value on the stack is the minumum value for a signed 64-bit integer.
+Adding 1 results in 2^63 which is 1 followed by 63 zeroes. The negative integer on the stack is the minimum value for a signed 64-bit integer.
 .HEADER_PRIMARY
 FORTH Arithmetic -- Definition Style
 .PARAGRAPH
@@ -598,30 +600,3 @@ integers which encompass a range of over -2 billion to +2 billion (and which we'
 Single-length numbers
 .PARAGRAPH
 integers which fall within the rane of -32768 to +32767: the only numbers which are valid as the arguments or results of any of the operators we've discussed so far. (This seemingly arbitrary range comes from the way computers are designed, as we'll see later on.)
-.HEADER_PRIMARY
-Problems
-.HEADER_SECONDARY
-Problem #1
-.PARAGRAPH
-What is the difference between
-.START_INFO_HIGHLIGHT
-DUP DUP
-.END_HIGHLIGHT
-and
-.START_INFO_HIGHLIGHT
-2DUP
-.END_HIGHLIGHT
-?
-.HEADER_SECONDARY
-Solution #1
-.HEADER_SECONDARY
-Problem #2
-.PARAGRAPH
-Write a phrase which will reverse the order of the top four items on the stack; that is,
-.START_INFO_HIGHLIGHT
-(1 2 3 4 -- 4 3 2 1)
-.END_HIGHLIGHT
-.HEADER_SECONDARY
-Solution #2
-.PARAGRAPH
-.START_INFO_HIGHLIGHT

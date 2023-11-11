@@ -1,0 +1,533 @@
+<html><head><link rel="stylesheet" href="../../styles.css"></head><body><pre>
+
+<b>yet_another_webdev(blog)           2023-12-15           yet_another_webdev(blog)</b>
+
+<b>PROJECT</b>
+       Starting FORTH
+
+<b>POST</b>
+       Chapter 02 - How to get results
+
+<b>DESCRIPTION</b>
+       Forth arithmetics and stack manipulation words
+
+
+
+
+<b>FORTH Arithmetic -- Calculator Style</b>
+       Here are four simples integer-arithmetic operators in FORHT:
+
+</pre><pre class="info">
++      (n1 n2 -- sum)            Adds.                    pronounced "plus"
+
+-      (n1 n2 -- diff)           Subtracts (n1 - n2).     pronounced "minus"
+
+*      (n1 n2 -- prod)           Multiplies.              pronounced "star"
+
+/      (n1 n2 -- qout)           Divides (n1/n2).         pronounced "slash"
+       </pre><pre>
+
+       In  the  first  chapter, we learned that we can add two number by putting
+       them both on the stack, then  executing  the  word  <span class="info">+  </span> ,  then  finnaly
+       executing the word <span class="info">. </span>to get the result printed at our terminal.
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+17 5 + . 22    ok
+Stack&lt;10>
+       </pre><pre>
+
+       We can use thie method with all of FORTH's arithmetic operators. In other
+       words,  we  can use FORTH like a calculator to get answers, event without
+       writing a "program". Try a multiplication problem:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+7 8 * . 56    ok
+Stack&lt;10>
+       </pre><pre>
+
+       By now we've see that the operator comes after the numbers. In  the  case
+       of  subtraction  and division, though, we must also consider the order of
+       numbers ("7 - 4" is not the same as "4 - 7").
+
+       Just remember this rule: To convert to postfix, simple move the  operator
+       to the end of the expression:
+
+</pre><pre class="info">
+Infix                    Postfix
+
+3 + 4                    3 4 +
+
+500 - 300           500 300 -
+
+6 X 5                    6 5 *
+
+20 /  4                  20 4 /
+
+       </pre><pre>
+
+       So to do this subtraction problem: <span class="info">7 - 4 = </span>
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+7 4 - . 3    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Example of division:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+20 4 - . 5    ok
+Stack&lt;10>
+       </pre><pre>
+
+       What do you do if you have more that one operator in an expression, like:
+       <span class="info">4  + (17 * 12) </span>you ask? Let's take it step-by-step: the parentheses tell
+       you to first multiply 17 by 12, then add 4. So in FORTH you would write:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+17 12 * 4 + . 208    ok
+Stack&lt;10>
+       </pre><pre>
+
+       17 and 12 go onto the stack.  <span class="info">* </span>miltiplies them and returns  the  result
+       to  the stack. Then the 4 goes onto the stack, on top of 204. <span class="info">+ </span>adds the
+       two numbers returning 208 to the stack.
+
+       No there's an interesting problem: <span class="info">(3 + 9) * (4 + 6) </span>
+
+       To solve it  we have to add 3 to 9 first, then add 4 to 6,  then  finally
+       multiply the two sums. In FORTH, we can write:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+3 9 + 4 6 + * . 120    ok
+Stack&lt;10>
+       </pre><pre>
+
+<b>For Adventuresome Newcomers Sitting at a Terminal</b>
+       If  you're  on of those people who likes to fool around and figure things
+       out for themselves  without  reading  the  book,  then  you're  bount  to
+       discover  a  copule  of  weird  things.  First off, as we told you, these
+       operators are <span class="info">integer operators </span>.  That not only means that you can't  do
+       calculations with decimal values, like
+
+</pre><pre class="info">
+10.00 2.25 +
+       </pre><pre>
+
+       if also means that you van only get integer results, as in
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+21 4 / . 5    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Another thing is that if you try to multiply:
+
+</pre><pre class="info">
+10000 10 *
+       </pre><pre>
+
+       or  some  suck large numbers, you'll get a crazy answer. So we're telling
+       you up front that with the operators introduced so far and  with  <span class="info">.  </span> to
+       print  the results, you can't have any numbers that are higher than 32767
+       and lower than -32768. Numbers within  this  range  are  called  "single-
+       lenght signed numbers".
+
+       Notice,  in  the  list  of  FORTH words a few pages back, the letter "n",
+       which stands for "number". Since FORTH uses  single-length  numbers  more
+       often than other types of numbers, the "n" signifies that the number must
+       be  single-length.  And  yes,  there are other operators that extend this
+       range ("double-length" operatores, which are indicated by "d").
+
+   <b>pForth integers</b>
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: 2^10   1024 ;    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Define the word 2^10 to put 1024 (which is 2 to the 10th  power)  on  the
+       stack.
+
+</pre><pre class="info">
+: 2^62   2^10 2^10 2^10 2^10 2^10 2^10 2 2 * * * * * * * ;    ok
+Stack&lt;10>
+       </pre><pre>
+
+       2^62 is 1 followed by 62 0s.
+
+</pre><pre class="info">
+: 2^62-1   2^62 1 - ;    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Subtracting 1 from 2^62 is 0 followed by 62 1s.
+
+</pre><pre class="info">
+: 2^63-1   2^62 2^62-1 + ;    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Adding the two numbers results in 2^63 - 1 which is 0 followed by 63 1s.
+
+</pre><pre class="info">
+2^63-1    ok
+Stack&lt;10> 9223372036854775807
+1 +    ok
+Stack&lt;10> -9223372036854775808
+       </pre><pre>
+
+       Adding  1  results in 2^63 which is 1 followed by 63 zeroes. The negative
+       integer on the stack is the minimum value for a signed 64-bit integer.
+
+<b>FORTH Arithmetic -- Definition Style</b>
+       In chpater #1 we saw that we could define new words in terms  of  numbers
+       and  other  pre-defined  words. Let's explore some further possibilities,
+       usign some of our newly-learned math operators.
+
+       Let's say we want to convert various measurements to inches. We know that
+       <span class="info">1 yard = 36 inches </span>and <span class="info">1 foot = 12 inches </span>so we can  define  these  two
+       words  where  the names symbolize "yards-to-inches" and "feet-to-inches".
+       Here' what they do:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: YARDS>IN   36 * ;    ok
+Stack&lt;10>
+: FT>IN   12 * ;    ok
+Stack&lt;10>
+10 YARDS>IN . 360    ok
+Stack&lt;10>
+2 FT>IN . 24    ok
+Stack&lt;10>
+       </pre><pre>
+
+       If we always want our result to be in inches, we can do the following:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: YARDS 36 * ;    ok
+Stack&lt;10>
+: FEET   12 * ;    ok
+Stack&lt;10>
+: INCHES ;    ok
+Stack&lt;10>
+10 YARDS 2 FEET 9 INCHES + + . 393    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Notice that the word <span class="info">INCHES </span>doesn't do anything except remind the  human
+       user  what the 9 is there for. If we really want to get fancy, we can add
+       these three definitions:
+
+</pre><pre class="info">
+: YARD YARDS ;    ok
+Stack&lt;10>
+: FOOT   FEET ;    ok
+Stack&lt;10>
+: INCH ;    ok
+Stack&lt;10>
+1 YARD 2 FEET 1 INCH + + . 61    ok
+Stack&lt;10>
+2 YARDS 1 FOOT + . 84    ok
+Stack&lt;10>
+       </pre><pre>
+
+       So far we have only defined words whose definitions contain a single math
+       operator. But it's perfectly possible to  put  many  operators  inside  a
+       definition, if that's what you need to do.
+
+       Let's  say  we  want  a word that computes the sum of five numbers on the
+       stack. A few pages back we summed five numbers like this: <span class="info">17 20 + 132 + 3
+       + 9 + . 181    ok </span>But we ca also enter <span class="info">17 20 132 3 9 + + + + . 181    ok
+       </span>We get the same answer, even though we've clustered all the numbers into
+       one group and  all  operators  into  another  group.  We  can  write  out
+       definition like this:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: 5#SUM   + + + + ;    ok
+Stack&lt;10>
+17 20 132 3 9 5#SUM . 181    ok
+Stack&lt;10>
+       </pre><pre>
+
+       If  we  were  going to keep <span class="info">5#SUM </span>for future use, we could enter it into
+       our ever-growing glossary, along  with  a  note  that  it  "expects  five
+       arguments" on the stack, which it will add together.
+
+       Here's  another  equation to write a definition for: <span class="info">(a + b) * c </span>Thus we
+       would write the following definition, this will work as long as  we  make
+       sure to push the numbers to the stack in the proper order:
+
+</pre><pre class="info">
+: SOLUTION  + * ;
+c a b SOLUTION
+       </pre><pre>
+
+<b>The Division Operators</b>
+       The  word  <span class="info">/  </span>is FORTH'S simplest division operator. Slash supplies only
+       the quotient; any remainder is lost:
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+22 4 / . 5    ok
+Stack&lt;10>
+       </pre><pre>
+
+       If you're thinking of a pocket calculator's per-cent operator, then  five
+       is not the full answers.
+
+       But  <span class="info">/  </span> is  only one of several division operators supplied by FORTH to
+       give you the flexability to tell the computer exactly what you want it to
+       do.
+
+       For example, let's say you want to solve this problem: "How  many  dollar
+       bills can I get in exchange for 22 quarters". The real answer, of course,
+       is  exactly  5, not 5.5. A computerized money changer, for example, would
+       not know howto give you 5.5 dollar bills.
+
+       Here are two more FORTH division operators:
+
+</pre><pre class="info">
+/MOD   (u1 u2 -- u-rem u-quot)   Divides. Returns the     pronounced "slash-mod"
+                                 remainder and the
+                                 quotient.
+
+MOD    (u1 u2 -- u-rem)          Returns the remainder    pronounced "mod"
+                                 from division.
+       </pre><pre>
+
+       The "u" stands for "unsigned". We'll see what this means in  the  chapter
+       on  cumputer  numbers. For now though, it means that the numbers can't be
+       negative.
+
+       gives both the remainder and quotient; <span class="info">MOD </span> gives  the  remainder  only.
+       (For  <span class="info">/MOD </span>, the stack notation in the table indicates that the quotient
+       will  be  on the top of the stack, and the remainder below. Remember, the
+       rightmost represents the topmost).
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+22 4 /MOD . . 5 2    ok
+Stack&lt;10>
+: QUARTERS   4 /MOD . ." ONES AND " . ." QUARTERS " ;    ok
+Stack&lt;10>
+22 QUARTERS 5 ONES AND 2 QUARTERS    ok
+Stack&lt;10>
+       </pre><pre>
+
+<b>Stack Maneuvers</b>
+       If you worked Prob. 6 int the last set, you  discovered  that  the  infix
+       equation  <span class="info">(a  -  b)/c </span>cannot be solved with a definition unless there is
+       some way to rearrange values on the stack.
+
+       Well, there is a way: by using a  "stack  manipulation  operator"  called
+       <span class="info">SWAP </span>
+
+       The word <span class="info">SWAP </span>is defined to switch the order of the top two stack items.
+       As  with  other  stack manipulation operators, you can test <span class="info">SWAP </span>at your
+       terminal in "calculator style"; that is, it doesn't have to be  contained
+       within a definition. Using <span class="info">SWAP </span>we can define a solution for <span class="info">(a - b)/c </span>
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+1 2 . . 2 1    ok
+Stack&lt;10>
+1 2 SWAP . . 1 2    ok
+Stack&lt;10>
+: SOLVE6b   - SWAP / ;    ok
+Stack&lt;10>
+2 10 4 SOLVE6b . 3    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Here is a list of several stack manipulation operators, including <span class="info">SWAP </span>.
+
+</pre><pre class="info">
+SWAP   (n1 n2 -- n2 n1)          Reverse the top two      pronounced "swap"
+                                 stack items.
+
+DUP    (n -- n n)                Duplicates the top       pronounced "dupe"
+                                 stack items.
+
+OVER   (n1 n2 -- n1 n2 n1)       Makes a copy of the      pronounced "over"
+                                 second item and pushes
+                                 it on the top.
+
+ROT    (n1 n2 n3 -- n2 n3 n1)    Rotates the third item   pronounced "rote"
+                                 to the top.
+
+DROP   (n -- )                   Discards the top stack   pronounced "drop"
+                                 item.
+       </pre><pre>
+
+   <b>DUP operator</b>
+       the  next  stack manipulation operator on the list, <span class="info">DUP </span>, simply makes a
+       second copy (duplicated) of the top stack item. For example, if  we  have
+       "a" on the stack, we can compute a^2 as follows
+
+</pre><pre class="info">
+$ forth
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+3    ok
+Stack&lt;10> 3
+DUP * . 9    ok
+       </pre><pre>
+
+   <b>OVER operator</b>
+       Now somebody tells you to evaluate the expression: <span class="info">a * (a + b) </span>given the
+       following  stack  order: <span class="info">(a b -- ) </span>But, you say, I'm going to need a new
+       manipulation operator: I want two copies of the "a", and the "a" is under
+       the "b". Here's the word you need: <span class="info">OVER </span>. <span class="info">OVER </span>simply makes a  copy  of
+       the  "a" and leapfrogss it over the "b": <span class="info">(a b -- a b a) </span>. The expression
+       <span class="info">a * (a + b) </span>can be solved with: <span class="info">OVER + * </span>
+
+       When writing equations in FORTH, it's best to "factor  them  out"  firts.
+       For  example,  if  somebody  asks  you  to evaluate: <span class="info">a^2 + a*b </span>is FORTH,
+       you'll find it quite complicated (and maybe even  impossible)  using  the
+       words we've introduced so for ... unless you factor out the expression to
+       read: <span class="info">a * (a + b) </span>which is the expression we just evalutated.
+
+   <b>ROT operator</b>
+       The  fourth  stack  manipulator  on the list is <span class="info">ROT </span>(pronounced "rote"),
+       which is short for "rotate". Here's what <span class="info">ROT </span>does to the top three stack
+       values: <span class="info">(a b c -- b c a) </span>
+
+       For example, if we need to evaluate the expression: <span class="info">ab - bc  </span> we  should
+       first  factor  out the "b"s: <span class="info">b * (a - c) </span>Now if our starting-stack order
+       is this: <span class="info">(c b a -- ) </span>we can use: <span class="info">ROT - * </span>
+
+   <b>DROP operator</b>
+       The final stack manipulation operator on the list is <span class="info">DROP </span>. All it  does
+       is discard the top stack value.
+
+   <b>A Handy Hint</b>
+       Use  the  word <span class="info">.S </span>for a non-destructive stack print. This will print the
+       state of the current stack without removing the values from it.
+
+<b>Playing Doubles</b>
+       The next four stack manipulation operators should look vaguely familiar:
+
+</pre><pre class="info">
+2SWAP  (d1 d2 -- d2 d1)          Reverse the top two      pronounced "two-swap"
+                                 pairs of numbers.
+
+2DUP   (d -- d d)                Duplicates the top       pronounced "two-dupe"
+                                 pair of numbers.
+
+2OVER  (d1 d2 -- d1 d2 d1)       Makes a copy of the      pronounced "two-over"
+                                 second pair of numbers
+                                 and pushes it on top.
+
+2DROP  (d -- )                   Discards the top pair    pronounced "two-drop"
+                                 of numbers.
+       </pre><pre>
+
+       the prefix "2" indicates that these stack manipulation  operators  handle
+       numbers  in  pairs. The letter "d" in the stack effects column stands for
+       "double". "Double" has a special significance that we will  discuss  when
+       we discess "n" and "u".
+
+       The  "2"-manipulators  listed above are so straightforward, we won't even
+       bore you with examples.
+
+       One more thing: there are still some stack manipulators we haven't talked
+       about yet, so don't go crazy by trying too much  fancy  footwork  on  the
+       stack.
+
+<b>FORTH words covered in this chpater:</b>
+</pre><pre class="info">
++      (n1 n2 -- sum)            Adds.                    pronounced "plus"
+
+-      (n1 n2 -- diff)           Subtracts (n1 - n2).     pronounced "minus"
+
+*      (n1 n2 -- prod)           Multiplies.              pronounced "star"
+
+/      (n1 n2 -- qout)           Divides (n1/n2).         pronounced "slash"
+
+/MOD   (u1 u2 -- u-rem u-quot)   Divides. Returns the     pronounced "slash-mod"
+                                 remainder and the
+                                 quotient.
+
+MOD    (u1 u2 -- u-rem)          Returns the remainder    pronounced "mod"
+                                 from division.
+
+SWAP   (n1 n2 -- n2 n1)          Reverse the top two      pronounced "swap"
+                                 stack items.
+
+DUP    (n -- n n)                Duplicates the top       pronounced "dupe"
+                                 stack items.
+
+OVER   (n1 n2 -- n1 n2 n1)       Makes a copy of the      pronounced "over"
+                                 second item and pushes
+                                 it on the top.
+
+ROT    (n1 n2 n3 -- n2 n3 n1)    Rotates the third item   pronounced "rote"
+                                 to the top.
+
+DROP   (n -- )                   Discards the top stack   pronounced "drop"
+                                 item.
+
+2SWAP  (d1 d2 -- d2 d1)          Reverse the top two      pronounced "two-swap"
+                                 pairs of numbers.
+
+2DUP   (d -- d d)                Duplicates the top       pronounced "two-dupe"
+                                 pair of numbers.
+
+2OVER  (d1 d2 -- d1 d2 d1)       Makes a copy of the      pronounced "two-over"
+                                 second pair of numbers
+                                 and pushes it on top.
+
+2DROP  (d -- )                   Discards the top pair    pronounced "two-drop"
+                                 of numbers.
+       </pre><pre>
+
+<b>Review of Terms</b>
+   <b>Double-length numbers</b>
+       integers  which  encompass  a range of over -2 billion to +2 billion (and
+       which we'll introduce officially in Chapter 7).
+
+   <b>Single-length numbers</b>
+       integers which fall within the rane of -32768 to +32767: the only numbers
+       which are valid as the arguments or results of any of the operators we've
+       discussed so far. (This seemingly arbitrary  range  comes  from  the  way
+       computers are designed, as we'll see later on.)
+
+toolsV2                                                 yet_another_webdev(blog)
+</pre></body></html>
