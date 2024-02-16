@@ -229,6 +229,7 @@ __replace_highlight () {
 }
 __replace_paragraph () {
 	local _blog_post_path=$1
+	sed -i '' 's|.PARAGRAPH \(.*\)$|.PARAGRAPH\n\1|g' $_blog_post_path
 	sed -i '' 's|.PARAGRAPH|.PP|g' $_blog_post_path
 }
 __replace_section () {

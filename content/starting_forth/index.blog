@@ -5,6 +5,12 @@ Starting FORTH
 .SH "Description:"
 Reading the 1st edition, 1981, of "Starting FORTH - An Introduction to the FORTH Language and Operating System for Beginners and Professionals" by Leo Brodie. Running examples using pForth on Arch Linux.
 .SH "Posts:"
+.SS "2024-02-16"
+.PP
+L_/;I_/;N_/;K_/;./240216223436663841442_starting_forth_ch04.htmlL_/;I_/;N_/;K_/;Chapter 04 - DECISIONS, DECISIONS, ...L_/;I_/;N_/;K_/;?"
+.PP
+This chapter introduces expressions that evaluate to TRUE or FALSE and the IF...THEN words that allow you to execute code only if certain conditions are met.
+.sp
 .SS "2023-12-15"
 .PP
 L_/;I_/;N_/;K_/;./231215161845089183755_starting_forth_ch02.htmlL_/;I_/;N_/;K_/;Chapter 02 - How to get resultsL_/;I_/;N_/;K_/;?"

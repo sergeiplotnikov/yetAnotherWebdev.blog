@@ -1,0 +1,685 @@
+<html><head><link rel="stylesheet" href="../../styles.css"></head><body><pre>
+
+<b>yet_another_webdev(blog)           2024-02-16           yet_another_webdev(blog)</b>
+
+<b>PROJECT</b>
+       Starting FORTH
+
+<b>POST</b>
+       Chapter 04 - DECISIONS, DECISIONS, ...
+
+<b>DESCRIPTION</b>
+       This  chapter  introduces  expressions that evaluate to TRUE or FALSE and
+       the IF...THEN words that allow  you  to  execute  code  only  if  certain
+       conditions are met.
+
+
+
+       In  this  chapter  we'll  learn  how  to  program  the  computer  to make
+       "decisions". This  is  the  moment  when  you  turn  your  computer  into
+       something more than an ordinary calculator.
+
+<b>The Conditional Phrase</b>
+       Imagine  we  are programming a mechanical egg-carton packer. Some sort of
+       mechanical device has counted the eggs on the conveyor belt, and  now  we
+       have the number of eggs on the stack. The FORTH phrase:
+
+</pre><pre class="info">
+12 = IF FILL-CARTON THEN
+       </pre><pre>
+
+       tests  whether  the number on the stack is equal to 12, and if it is, the
+       word FILL-CARTON is executed. If it's not, execution moves right along to
+       the words that follow <span class="info">THEN </span>
+
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: ?FULL   12 = IF ." IT'S FULL" THEN ;    ok
+Stack&lt;10>
+11 ?FULL    ok
+Stack&lt;10>
+12 ?FULL IT'S FULL   ok
+Stack&lt;10>
+       </pre><pre>
+
+   <b>NOTICE:</b>
+       an <span class="info">IF </span>... <span class="info">THEN </span>statement must be contained within a  colon  definition.
+       You can't just enter these words in "calculator style".
+
+   <b>pForth:</b>
+       It seems that pForth does allow if-then statements in "calculator style".
+
+</pre><pre class="terminal">
+$ cat > ifthen.fth &lt;&lt;EOF
+1 1 = IF ." TRUE." CR THEN ." AFTER IF-THEN" CR
+EOF
+$ forth -q ifthen.fth
+TRUE.
+AFTER IF-THEN
+       </pre><pre>
+
+       The program above, while running in pForth, is not a valid FORTH program.
+       And is not a valid gForth program.
+
+       The  words  that  follow  <span class="info">IF  </span>are executed if the condition is true. The
+       words that follow <span class="info">THEN </span>are always executed, as though you were  tellinmg
+       the  computer,  "After you make the choice, then continue the rest of the
+       definition". (In this example, the only word after <span class="info">THEN </span>is <span class="info">;  </span> ,  which
+       ends the definition)
+
+       Let's  look  at  another  example.  This  definition  checks  wheter  the
+       temperature of a laboratory boiler is too hot. It  expects  to  find  the
+       temperature on the stack:
+
+</pre><pre class="info">
+: ?TOO-HOT   220 > IF ." DANGER -- REDUCE HEAT" THEN ;
+       </pre><pre>
+
+       If  the  temperature on the stack is greater than 220, the danger message
+       will be printed at the terminal.
+
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: ?TOO-HOT   220 > IF ." DANGER -- REDUCE HEAT" THEN ;    ok
+Stack&lt;10>
+290 ?TOO-HOT DANGER -- REDUCE HEAT   ok
+Stack&lt;10>
+130 ?TOO-HOT    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Remember that every <span class="info">IF </span>needs a <span class="info">THEN </span>to come home to. Both words must be
+       in the same definition.
+
+       Here is a partial list of comparison operators that you can use before an
+       <span class="info">IF </span>... <span class="info">THEN </span>statement:
+
+</pre><pre class="info">
+=      pronounced "equal"
+
+&lt;      pronounced "less-than"
+
+>      pronounced "greater-than"
+
+=0     pronounced "zero equal"
+
+0&lt;     pronounced "zero-less-than"
+
+0>     pronounced "zero-greater-than"
+       </pre><pre>
+
+       The words <span class="info">&lt; </span>and <span class="info">> </span>expect the same  stack  order  as  the  arithmetic
+       operators, that is:
+
+</pre><pre class="info">
+Infix                             Postfix
+
+2 &lt; 10      is equivalent to      2 10 &lt;
+17 > -39    is equivalent to      17 -39 >
+       </pre><pre>
+
+       The  words <span class="info">0= </span>, <span class="info">0&lt; </span>, and <span class="info">0> </span>expect only one value on the stack. The
+       value is compared with zero.
+
+       Another word, <span class="info">NOT </span>, doesn't test any value at all;  it  simply  reverses
+       whatever condition has just been tested. For example, the phrase:
+
+</pre><pre class="info">
+... = NOT IF ...
+       </pre><pre>
+
+       will  execute  the  words after <span class="info">IF </span>, if the two numbers on the stack are
+       not equal.
+
+<b>The Alternative Phrase</b>
+       FORTH allows you to provide an alternative phrase in an  <span class="info">IF  </span> statement,
+       with the word <span class="info">ELSE </span>.
+
+       The  following example is a definition which tests whether a given number
+       is a valid day of the month:
+
+</pre><pre class="info">
+: ?DAY   32 &lt; IF ." LOOKS GOOD" ELSE ." NO WAY" THEN ;
+       </pre><pre>
+
+       If the number on the stack is less then thirty-two,  the  message  "LOOKS
+       GOOD" will be printed. Otherwise, "NO WAY" will be printed.
+
+       Imagine that <span class="info">IF </span>pulls a railroad-track switch, depending on the coutcome
+       of  the test. Execution then takes one of two routes, but either way, the
+       tracks rejoin at the word <span class="info">THEN </span>.
+
+       By the way, in computer terminology, this whole business of rerouting the
+       path of execution is called "branching".
+
+       Here's a more useful example. You know that dividing any number  by  zero
+       is  impossible,  so  if you try it on a computer, you'll get an incorrect
+       answer. We might define a  word  which  only  performs  division  if  the
+       denominator  is not zero. The following definition expects stack items in
+       this order:
+
+</pre><pre class="info">
+(numerator denominator -- )
+
+: /CHECK   DUP 0= IF ." INVALID" DROP ELSE / THEN ;
+       </pre><pre>
+
+       Notice that we first have to <span class="info">DUP </span>the denominator because the phrase
+
+</pre><pre class="info">
+0= IF
+       </pre><pre>
+
+       will destroy it in the process.
+
+       Also notice that word <span class="info">DROP </span>removes the denominator if division won't  be
+       performed,  so that wheter we devide or not, the stack effect will be the
+       same.
+
+<b>Nested IF...THEN Statements</b>
+       It's possible to put an <span class="info">IF </span>... <span class="info">THEN </span>(or <span class="info">IF </span>...  <span class="info">ELSE  </span> ...  <span class="info">THEN  </span> )
+       statement  inside  another <span class="info">IF </span>... <span class="info">THEN </span>statement.  In fact, you can get
+       as complicated as you like, so long as every <span class="info">IF </span>has one <span class="info">THEN </span>.
+
+       Consider the following definition, which determines the size of comercial
+       eggs (extra large, large, etc.), given their weight in ounces per dozen:
+
+</pre><pre class="terminal">
+$ cat > nestedIf.fth &lt;&lt;EOF
+: EGGSIZE   DUP 18 &lt; IF ." REJECT"           ELSE
+            DUP 21 &lt; IF ." SMALL"            ELSE
+            DUP 24 &lt; IF ." MEDIUM"           ELSE
+            DUP 27 &lt; IF ." LARGE"            ELSE
+            DUP 30 &lt; IF ." EXTRA LARGE"      ELSE
+                        ." ERROR"
+                    THEN THEN THEN THEN THEN DROP ;
+17 DUP . EGGSIZE CR
+18 DUP . EGGSIZE CR
+19 DUP . EGGSIZE CR
+20 DUP . EGGSIZE CR
+21 DUP . EGGSIZE CR
+22 DUP . EGGSIZE CR
+23 DUP . EGGSIZE CR
+24 DUP . EGGSIZE CR
+25 DUP . EGGSIZE CR
+26 DUP . EGGSIZE CR
+27 DUP . EGGSIZE CR
+28 DUP . EGGSIZE CR
+29 DUP . EGGSIZE CR
+30 DUP . EGGSIZE CR
+31 DUP . EGGSIZE CR
+EOF
+$ forth -q nestedIf.fth
+17 REJECT
+18 SMALL
+19 SMALL
+20 SMALL
+21 MEDIUM
+22 MEDIUM
+23 MEDIUM
+24 LARGE
+25 LARGE
+26 LARGE
+27 EXTRA LARGE
+28 EXTRA LARGE
+29 EXTRA LARGE
+30 ERROR
+31 ERROR
+       </pre><pre>
+
+       The entire definition is a series of "nested" <span class="info">IF </span>... <span class="info">THEN  </span> statements.
+       The  word  "nested"  referst to the fact that  the statements nest inside
+       one another, like a set of mixing bowls.
+
+       The five <span class="info">THEN </span>at the bottom close off the five <span class="info">THEN </span>in reverse order.
+
+       Also notice that a <span class="info">DROP </span>is necessary at the end of the definition to get
+       rid of the original value.
+
+       Finally, notice that the definition is  visually  organized  to  be  read
+       easily  by  humans.  Most  FORTH  programmers would rather waste a little
+       space in a block than let things get any more confused than they have  to
+       be.
+
+<b>A Closer Look at IF</b>
+       How does the comparison operator ( <span class="info">= </span>, <span class="info">&lt; </span>, <span class="info">> </span>, or whichever) let <span class="info">IF
+       </span> know whether the condition is true or false? By simply leaving a one or
+       a zero on the stack. A one means that the condition is true; a zero means
+       that the condition is false.
+
+       In computer jargon, when one piece of program leaves a value as a  signal
+       for another piece of program, that value is called a "flag".
+
+       Try  entering  the following phrases at the terminal, letting <span class="info">. </span>show you
+       what's on the stack as a flag.
+
+</pre><pre class="info">
+5 4 > . 1    ok
+5 4 &lt; . 0    ok
+       </pre><pre>
+
+   <b>TRUE/FALSE in pForth</b>
+       In pForth the value of true is -1 and not +1, false is still zero.
+
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+5 4 > . -1    ok
+Stack&lt;10>
+5 4 &lt; . 0    ok
+Stack&lt;10>
+       </pre><pre>
+
+       (It's okay to use comparison operators directly  at  your  terminal  like
+       this,  but  remember  that  an  <span class="info">IF  </span> ...  <span class="info">ELSE </span>statement must be wholly
+       contained within a definition because it involves branching.)
+
+       <span class="info">IF </span>will take a one (-1 in pForth) as a flag that means true and  a  zero
+       as  a flag that means false. Now let's take a closer look at <span class="info">NOT </span>, which
+       reverses the flag on the stack.
+
+</pre><pre class="info">
+0 NOT . 1    ok
+1 NOT . 0    ok
+       </pre><pre>
+
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+0 NOT . -1    ok
+Stack&lt;10>
+1 NOT . 0    ok
+Stack&lt;10>
+-1 NOT . 0    ok
+Stack&lt;10>
+       </pre><pre>
+
+       Now we'll let you in on a little secret; <span class="info">IF </span>will take any non-zero value
+       to mean true. The fact that an arithmetic zero is  identical  to  a  flag
+       that means "false" leads to some interesting results.
+
+       For  one thinkg, if all you want to test is whether a number is zero, you
+       don't need a comparison operator at all. For example, a slightly  simpler
+       version on /CHECK, which we saw earlier, could be:
+
+</pre><pre class="info">
+: /CHECK   DUP IF / ELSE ." INVALID" DROP THEN ;
+       </pre><pre>
+
+       Here's  another interesting result. Say you want to test whether a number
+       is an even multiple of ten, such as 10, 20, 30, 40, etc.  You  know  that
+       the phrase <span class="info">10 MOD </span>divides by ten and returns the remainder only. An even
+       multiple  of ten would produce a zero remainder, so the phrase <span class="info">10 MOD 0= </span>
+       gives the appropriate "true" or "false" flag.
+
+       If you think about it, both <span class="info">0= </span>and <span class="info">NOT </span>do exactly the same thing:  they
+       change zeroes to ones and non-zeroes to zeroes. They have different names
+       because one makes more sense dealing with numbers, the other with flags.
+
+       Still  another  interesting  result  is  that you can use <span class="info">- </span>(minus) as a
+       comparison operator which tests whether two values are "not equal".  When
+       you  subtract  two equal numbers, you get zero (false); when you subtract
+       two unequal numbers, you get a non-zero value (true).
+
+       And a final result is described in the next section.
+
+<b>A Little Logic</b>
+       It's possible to take several flags from various tests and  combine  them
+       into  a  single  flag for one <span class="info">IF </span>statement. You might combine them as an
+       "either/or" decision, in which you make two comparison tests.  If  either
+       or  both of the tests are true, then the computer will execute something.
+       If neither is true, it won't.
+
+       Here's a rather simple-minded example, just to show what we mean. Say you
+       want to print the name "ARTICHOKE" if an input number is either  negative
+       or a multiple of ten. Consider the phrase:
+
+</pre><pre class="info">
+DUP 0&lt; SWAP 10 MOD 0= +
+       </pre><pre>
+
+       Here's what happens when the input number is, say, 30:
+
+</pre><pre class="info">
+Operator    Contents    Operation
+            of stack
+----------------------------------------------------------------
+
+                 30
+
+DUP         30   30     Duplicates it so we can test it twice.
+
+0&lt;          30    0     Is it negative? No (zero).
+
+SWAP         0   30     Swap the flag with the number.
+
+10 MOD 0=    0    1     Is it evenly divisible by 10? Yes (one).
+
++                 1     Adds the flags.
+       </pre><pre>
+
+       What  happens  when you add flags? The result is a true if either or both
+       conditions are ture. In this example, the  result  is  one,  which  means
+       "true". If the input number had been -30, then both conditions would have
+       been  true  and the sum would have been two. Two is, of course, non-zero.
+       So as far as <span class="info">IF </span>is concerned, two is as true as one.
+
+       Our simple-minded definition, then, would be:
+
+</pre><pre class="info">
+: VEGETABLE  DUP 0&lt; SWAP 10 MOD 0= + IF ." ARTICHOKE" THEN ;
+       </pre><pre>
+
+       Here's an improved version of a previous example called ?DAY .
+
+</pre><pre class="info">
+: ?DAY   DUP 1 &lt; SWAP 31 > + IF ." NO WAY" ELSE ." THANK YOU" THEN ;
+       </pre><pre>
+
+       The above two examples will always work because  any  "true"  flags  will
+       always  be  exactly 1. In some cases, however, a flag may be any non-zero
+       value, not just "1", in which case it's dangerous to add them with <span class="info">+  </span> .
+       For  example,  <span class="info">1 -1 + . </span>gives us a mathematically correct answer but not
+       the answer we want if 1 and -1 are flags.
+
+       For this reason, FORTH supplies a word called <span class="info">OR </span>, which will return the
+       correct flag even in the case of 1 and -1. An "or decision" is a computer
+       term for the kind of flag combination we've been discussing. For example,
+       if either the front door or the back door is open (or both),  flies  will
+       come in.
+
+       Another  kind  of  decision  is  called  an  "and"  decision. In an "and"
+       decision, both conditions must be true for the result  to  be  true.  For
+       example,  the front door and the back door must both be open for a breeze
+       to come through. If there are three or more conditions, they must all  be
+       true.
+
+       How  can we do this in FORTH? By using handy word <span class="info">AND </span>. Here's what <span class="info">AND </span>
+       would do with the four possible compbinations of flags we saw earlier:
+
+</pre><pre class="info">
+flag1  flag2   AND
+------------------
+0      0       0
+1      0       0
+0      1       0
+1      1       1
+       </pre><pre>
+
+       In other words, only the combination <span class="info">1 1 AND </span>produces a result of one.
+
+   <b>AND in pForth</b>
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built Jan 26 2024 21:06:14 (static)
+
+0 -1 AND . 0    ok
+Stack&lt;10>
+0 1 AND . 0    ok
+Stack&lt;10>
+-1 -1 AND . -1    ok
+Stack&lt;10>
+1 1 AND . 1    ok
+Stack&lt;10>
+5 5 AND . 5    ok
+Stack&lt;10>
+5 1 AND . 1    ok
+Stack&lt;10>
+5 2 AND . 0    ok
+Stack&lt;10>
+4 2 AND . 0    ok
+Stack&lt;10>
+6 2 AND . 2    ok
+Stack&lt;10>
+       </pre><pre>
+
+       In the examples above the two cases <span class="info">5 2 AND </span>and <span class="info">4 2 AND </span>returned  FALSE
+       while  in  both  cases  the  input  flags are non-zero, TRUE, values. The
+       reason for this is the pForth implementation of the  <span class="info">AND  </span> word.  It  is
+       implemented using the bitwise AND C-language operator.
+
+   <b>Back to the book...</b>
+       Let's  say  we're  looking for a cartboard box that's big enough to fit a
+       disk drive which measures: height 6", width 19" and length 22"
+
+       The height, width and length requirements all must be satisfied  for  the
+       box  to  be  big enough. If we have the dimensions of a box on the stack,
+       then we can define:
+
+</pre><pre class="info">
+: BOXTEST   (length width heigth -- )
+     6 > ROT 22 > ROT 19 > AND AND
+     IF ." BIG ENOUGH" THEN ;
+       </pre><pre>
+
+       Notice that we've put a comment inside the definition, to  remind  us  of
+       stack  effects.  This  is  particularly  wise  when  the  stack  order is
+       potentionally confusing or hard to remember. You can  test  BOXTEST  with
+       the phrase:
+
+</pre><pre class="info">
+23 20 7 BOXTEST BIG ENOUGH    ok
+       </pre><pre>
+
+       As your applications become more sophisticated, you will be able to write
+       statements  in  FORTH that look like postfix English and are very easy to
+       read. Just define the individual words within  the  definition  to  check
+       some condition somewhere, then leave a flag on the stack. An example:
+
+</pre><pre class="info">
+: SNAPSHOT   ?LIGHT ?FILM AND IF PHOTOGRAPH THEN ;
+       </pre><pre>
+
+       The  example above checks that there is available light and that there is
+       film in the camera before taking  the  picture.  Another  example,  which
+       might be used in a computer-dating application, is:
+
+</pre><pre class="info">
+: MATCH   HUMOROUS SENSITIVE AND
+     ART.LOVING MUSIC.LOVING OR AND SMOKING NOT AND
+     IF ." I HAVE SOMEONE YOU SHOULD MEET" THEN ;
+       </pre><pre>
+
+       Words  like HUMOROUS and SENSITIVE have been defined to check a record in
+       a disk  file  that  contains  information  on  other  applicants  of  the
+       appropriate sex.
+
+<b>Two Words with Built-in IFs</b>
+   <b>?DUP</b>
+       The  word  <span class="info">?DUP  </span> duplicates the top stack value only if it is non-zero.
+       This can eliminate a few surplus words. For example the definition
+
+</pre><pre class="info">
+: /CHECK   DUP IF / ELSE DROP THEN ;
+       </pre><pre>
+
+       can be shortened to:
+
+</pre><pre class="info">
+: /CHECK   ?DUP IF / THEN ;
+       </pre><pre>
+
+   <b>ABORT"</b>
+       It may happen that somewhere in a  complex  application  an  error  might
+       occur  (such as division by zero) way down in one of the low-level words.
+       When this happens you don't just want the computer to keep on going,  and
+       you also dont't want it to leave anything on the stack.
+
+       If  you  think  such an error might occur, you can use the word <span class="info">ABORT" </span>.
+       <span class="info">ABORT" </span>expects a flag on the stack: a "true" flag tells it  to  "abort",
+       which  in  turn  clears  the stack and returns execution on the terminal,
+       waiting for someone to type something. <span class="info">ABORT" </span>also prints  the  name  of
+       the last interpreted word, as well  as whatever message you want.
+
+       Let's  illustrate. We hope you're not sick of /CHECK by now, because here
+       is yet another version:
+
+</pre><pre class="info">
+: /CHECK   DUP 0= ABORT" ZERO DENOMINATOR" / ;
+       </pre><pre>
+
+       In this version, if the denominator is zero, any numbers that  happen  to
+       be on the stack will be dropped and the terminal will show:
+
+</pre><pre class="info">
+8 0 /CHECK /CHECK ZERO DENOMINATOR
+       </pre><pre>
+
+   <b>Testing the code above in pForth</b>
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: /CHECK   DUP 0= ABORT" ZERO DENOMINATOR" / ;    ok
+Stack&lt;10>
+8 0 /CHECK ZERO DENOMINATOR
+Stack&lt;10> 8 -2
+THROW code = -2
+ABORT
+       </pre><pre>
+
+       Code  -2  is  the  code  for  abort",  can  be found in <span class="info">fth/system.fth </span>.
+       Pressing ENTER results in:
+
+</pre><pre class="info">
+PForth V2.0.1, LE/64, built May 12 2023 10:51:31 (static)
+
+: /CHECK   DUP 0= ABORT" ZERO DENOMINATOR" / ;    ok
+Stack&lt;10>
+8 0 /CHECK ZERO DENOMINATOR
+Stack&lt;10> 8 -2
+THROW code = -2
+ABORT
+    ok
+Stack&lt;10>
+       </pre><pre>
+
+       The terminal returns control to the user and the stack is empty.
+
+   <b>Back to the book...</b>
+       Just as an experiment, try putting /CHECK inside another definition:
+
+</pre><pre class="info">
+: ENVELOPE   /CHECK ." THE ANSWER IS" . :
+       </pre><pre>
+
+       and try:
+
+</pre><pre class="info">
+8 4 ENVELOPE THE ANSWER IS 2 ok
+8 0 ENVELOPE ENVELOPE ZERO DENOMINATOR
+       </pre><pre>
+
+       The point is that when /CHECK aborts, the rest of  ENVELOPE  is  skipped.
+       Also notice that the name ENVELOPE, not /CHECK is printed.
+
+       A  useful  word  to  use  in  conjunction with <span class="info">ABORT" </span>is <span class="info">?STACK </span>, which
+       checks for stack underflow and returns a true flag if it finds  it.  Thus
+       the phrase:
+
+</pre><pre class="info">
+?STACK ABORT" STACK EMPTY"
+       </pre><pre>
+
+       aborts if the stack has underflowed.
+
+       FORTH  uses the identical phrase, in fact. But is waits until all of your
+       definitions have stopped executing before it performs the <span class="info">?STACK  </span> test,
+       because  checking  continuosly throughout execution would needlessly slow
+       down the computer. You're free to insert a <span class="info">?STACK ABORT" </span>phrase  at  any
+       critical or not-yet-tested portion of your application.
+
+   <b>Footnote: For computer Philosophers</b>
+       FORTH  provides  certain  error  checking  automatically. But because the
+       FORTH  operating system is so easy to modify, users can  readily  control
+       the  amount of error checking their system will do. This flexibility lets
+       users make their own tradeoffs between convenience and execution speed.
+
+       Here's a list of the FORTH words we've covered in this chapter:
+
+</pre><pre class="info">
+IF xxx         IF: (flag -- )       If flag is true (non-zero) executes xxx;
+   ELSE yyy                         otherwise executes yyy; continues with zzz
+   THEN zzz                         regardless. The phrase ELSE yyy is optional.
+
+=              (n1 n2 -- flag)      Returns true if n1 and n2 are equal.
+
+-              (n1 n2 -- n-diff)    Returns true (i.e., the non-zero difference)
+                                    if n1 and n2 are not equal.
+
+&lt;              (n1 n2 -- flag)      Returns true if n1 is less than n2.
+
+>              (n1 n2 -- flag)      Returns true if n1 is greater than n2.
+
+0=             (n -- flag)          Returns true if n is zero (i.e., reverses
+                                    the truth value)
+
+0&lt;             (n -- flag)          Returns true if n is negative.
+
+0>             (n -- flag)          Returns true if n is positive.
+
+NOT            (flag -- flag)       Reverses the result of the previous test;
+                                    equivalent to 0=.
+
+AND            (n1 n2 -- and)       Returns the logical AND.
+
+OR             (n1 n2 -- or)        Returns the logical OR.
+
+?DUP           (n -- n n)           Duplicates only if n is non-zero.
+               or (0 -- 0)
+
+ABORT" xxx"    (f -- )              If the flag is true, types out the last word
+                                    interpreted, followed by the text. Also
+                                    clears the user's stack and returns control
+                                    to the terminal. If false, takes no action.
+
+?STACK         ( -- flag)           Returns true if a stack underflow
+                                    condition has occured.
+       </pre><pre>
+
+<b>Review of Terms</b>
+   <b>Abort</b>
+       as a general computer term, to abruptly cease execution  if  a  condition
+       occurs  which  the  program  is not designed to handle, in order to avoid
+       producing nonsense or possibly doing damage
+
+   <b>"And" decision</b>
+       two conditions that are combined such that if both of them are true,  the
+       result is true.
+
+   <b>Branching</b>
+       breaking  the  normally  straightforward  flow  execution,  depending  on
+       conditions if effect at the time  of  execution.   Branching  allows  the
+       computer to respond differently to different conditions.
+
+   <b>Comparison operator</b>
+       in  general, a command that compares one value with another (for example,
+       determines whether one is  greater  than  the  other)  and  sets  a  flag
+       accordingly, which normally will be checked by a conditional operator. In
+       FORTH, a comparison operator leaves the flag on the stack.
+
+   <b>Conditional operator</b>
+       a  word,  such  as  <span class="info">IF  </span>, which routes the flow of execution differently
+       depending on some condition (true or false).
+
+   <b>Flag</b>
+       as a general computer term, a value stored in memory which  serves  as  a
+       signal  as  to  whether  some  known condition is true or false. Once the
+       "flag is set", any number of routines in various parts of a  program  may
+       check (or reset) the flag, as necessary.
+
+   <b>Logic</b>
+       in  computer  terminology,  the  system of representing conditions in the
+       form of "logical variables", which can  be  either  true  or  false,  and
+       combining  these variables using such "logical operators" as "and", "or",
+       and "not", to form statements which may be true or false.
+
+   <b>Nesting</b>
+       placing a branching structure within an outer branching structure.
+
+   <b>"OR" decision</b>
+       two conditions that are combined such that if either of them is true, the
+       result is true.
+
+toolsV2                                                 yet_another_webdev(blog)
+</pre></body></html>
