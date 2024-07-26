@@ -1,0 +1,258 @@
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+"PROJECTPLACEHOLDER"
+.POST_TITLE
+"POSTPLACEHOLDER"
+.POST_DESCRIPTION
+"DESCRIPTIONPLACEHOLDER"
+.HEADER_BODY_SEPARATOR
+.PARAGRAPH
+In this chapter we'll introduce a new batch of atithmetic operators. Along the way we'll tackle the problem of handling decimal points using only whole-number arithmetic.
+.HEADER_PRIMARY
+Quckie Operators
+.START_INFO_SECTION
+1+         (n -- n+1)      Adds one.                      pronounced "one-plus"
+
+1-         (n -- n-1)      Subtracts one.                 pronounced "one-minus"
+
+2+         (n -- n+2)      Adds two.                      pronounced "two-plus"
+
+2-         (n -- n-2)      Subtracts two.                 pronounced "two-minus"
+
+2*         (n -- n*2)      Multiplies by two
+                           (arithmetic left shift).       pronounced "two-star"
+
+2/         (n -- n/2)      Divides by two
+                           (arithmetic right shift).      pronounced "two-slash"
+.END_SECTION
+.PARAGRAPH
+the reason they have been defined as words in your FORTH system is that they are used very frequently in most applications and even in the FORTH system itself.
+.PARAGRAPH
+Ther are three reasons to use
+.START_INFO_HIGHLIGHT
+1+
+.END_SECTION
+, instead of one and
+.START_INFO_HIGHLIGHT
++
+.END_SECTION
+, in your new definitions. First, you save a little dictionary space each itme. Second, since such words have been specifically defined in the "nachine language" of each individual type of compputer to take advantages of the compurer's architecture, they execute faster than one and 
+.START_INFO_HIGHLIGHT
++
+.END_SECTION
+.DOT Finnaly, you save a little time during compilation.
+.HEADER_PRIMARY
+Miscellaneous Math Operators
+.PARAGRAPH
+Here's a table of four miscellaneous math operators. LIke the quickie operators, these functions should be obvious from their names:
+.START_INFO_SECTION
+ABS     (n -- |n|)         Returns the absolute value.     pronounced "absolute"
+
+NEGATE  (n -- -n)          Changes the sign.               pronounced "negate"
+
+MIN     (n1 n2 -- n-min)   Returns the minimum.            pronounced "min"
+
+MAX     (n1 n2 -- n-max)   Returns the maximum.            pronounced "max"
+.END_SECTION
+.HEADER_SECONDARY
+ABS example
+.PARAGRAPH
+Write a definition which computes the difference between two numbers, regardless of the order in which the numbers are entered:
+.START_INFO_SECTION
+: DIFFERENCE   - ABS ;
+52 37 DIFFERENCE .   15 ok
+37 52 DIFFERENCE .   15 ok
+.END_SECTION
+.HEADER_SECONDARY
+MIN example
+.PARAGRAPH
+Write a difenition which computes the comission that a furniture salesperson will receive if they've been promised $50 or 1/10 of the sale proce, whichever is less, on each sale they make.
+.START_INFO_SECTION
+: COMMISSION   10 / 50 MIN ;
+600 COMMISSION .   50 ok
+450 COMMISSION .   45 ok
+50 COMMISSION .   5 ok
+.END_SECTION
+.HEADER_PRIMARY
+The Return Stack
+.PARAGRAPH
+Up till now we've been talking about "the stack" as if there were only one. But in fact there are two: the "parameter stack" and the "return stack". The parameter stack is used more often by FORTH programmers, so it's simple called "the stack" unless there is doubt.
+.PARAGRAPH
+As you've seen, the parmeter stack holds parameters (or "arguments") that are being passed from word to word. The return stack, however, holds any number of "pointers" which the FORTH system uses to make its merry way through the maze of words that are executing other words.
+.PARAGRAPH
+You the use can employ the return stack as a kind of "extra hands" to hold values temporarily while you perform operations on the parameter stack.
+.PARAGRAPH
+The return stack is a last-in first-out structure, just like the parameter stack, so t can hold man values. But there's the catch: whatever you put on the return stack you must remove again before you get to the end of the definition (the semicolon), because at that point the FORTH system will expect to find a pointer there. You cannot use the return stack to pass parameters from one word to another.
+.PARAGRAPH
+The following table lists the words associated with the return stack. Remember, the stack notation refers to the parameter stack.
+.START_INFO_SECTION
+>R     (n -- )     Takes a value off the parameter          pronounced "to-R"
+                   stack and pushes it onto the
+		   return stack.
+
+R>     ( -- n)     Takes a value off the return             pronounced "from-R"
+                   stack and pushes it onto the
+		   parameter stack.
+
+I      ( -- n)     Copies the top of the return             pronounced "I"	
+                   stack without affecting it.
+
+I'     ( -- n)     Copies the second item of the return     pronounced "I-prime"	
+                   stack without affecting it.
+
+J      ( -- n)     Copies the third item of the return      pronounced "J"	
+                   stack without affecting it.
+.END_SECTION
+.PARAGRAPH
+The words
+.START_INFO_HIGHLIGHT
+>R
+.END_SECTION
+and
+.START_INFO_HIGHLIGHT
+R>
+.END_SECTION
+transfer a value to and from the return stack, respectively:
+.START_INFO_SECTION
+PForth V2.0.1, LE/64, built Mar  9 2023 12:08:29 (static)
+
+: EXAMPLE   >R SWAP R> ;    ok
+Stack<10> 
+2 3 1 EXAMPLE    ok
+Stack<10> 3 2 1 
+.END_SECTION
+.PARAGRAPH
+Each
+.START_INFO_HIGHLIGHT
+>R
+.END_SECTION
+and its corresponding
+.START_INFO_HIGHLIGHT
+R>
+.END_SECTION
+must be used together in the same definition or, if executed interactively, in the same line of input (before you hit the RETURN key).
+.PARAGRAPH
+The other three words --
+.START_INFO_HIGHLIGHT
+I
+.END_SECTION
+,
+.START_INFO_HIGHLIGHT
+I'
+.END_SECTION
+, and
+.START_INFO_HIGHLIGHT
+J
+.END_SECTION
+-- only copy values from the return stack without removing them. Thus the phrase:
+.START_INFO_HIGHLIGHT
+>R SWAP I
+.END_SECTION
+ would produce the same result as far as it goes, but unless you clean up your trash before the next semicolon (or return key), you will crash the system.
+.PARAGRAPH
+To see
+.START_INFO_HIGHLIGHT
+>R
+.END_SECTION
+,
+.START_INFO_HIGHLIGHT
+R>
+.END_SECTION
+, and
+.START_INFO_HIGHLIGHT
+I
+.END_SECTION
+might be used, imagine you are so unlucky as to need to solve the equation:
+.START_INFO_HIGHLIGHT
+ax^2 + bx + c
+.END_SECTION
+with all four values on the stack in the following order:
+.START_INFO_HIGHLIGHT
+(a b c x -- )
+.END_SECTION
+(remember to factor out first).
+.START_INFO_SECTION
+                    Parameter               Return
+Operator            Stack                   Stack
+--------------------------------------------------
+                    a b c x
+
+>R                  a b c                   x
+
+SWAP                a c b                   x
+
+ROT                 c b a                   x
+
+I                   c b a x                 x
+
+*                   c b ax                  x
+
++                   c (ax + b)              x
+
+R>                  c (ax + b)              
+
+*                   c x(ax + b) 
+
++                   x(ax + b) + c
+.END_SECTION
+.START_INFO_SECTION
+: QUADRATIC (a b c x -- n)
+    >R SWAP ROT I * + R> * + ;
+
+2 7 9 3 QUADRATIC   48 ok
+.END_SECTION
+.HEADER_SECONDARY
+Using the Return Stack in pForth
+.PARAGRAPH
+Below is the result of runnin the example above in pForth:
+.START_INFO_SECTION
+PForth V2.0.2, LE, built May 13 2024 21:35:11 (static)
+
+: QUADRATIC   >R SWAP ROT I * + R> * + ;    ok
+Stack<10> 
+2 7 9 3 QUADRATIC CR . 
+30    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+30 is not the correct answer. Below I define the same
+.START_INFO_HIGHLIGHT
+rs-test
+.END_SECTION
+word in pForth and gForth. In gForth the
+.START_INFO_HIGHLIGHT
+rs-test
+.END_SECTION
+word has the expected effect on the parameter stack.
+.START_INFO_SECTION
+Gforth 0.7.3, Copyright (C) 1995-2008 Free Software Foundation, Inc.
+Gforth comes with ABSOLUTELY NO WARRANTY; for details type `license'
+Type `bye' to exit
+: rs-test   >R I I I R> ;  ok
+1 2 3 rs-test . . . . . . 3 3 3 3 2 1  ok
+.END_SECTION
+.PARAGRAPH
+But in pForth it appears that the word
+.START_INFO_HIGHLIGHT
+I
+.END_SECTION
+pushes 0 onto the parameter stack instead of the parameter that was pushed onto the Return Stack by
+.START_INFO_HIGHLIGHT
+>R
+.END_SECTION
+.START_INFO_SECTION
+PForth V2.0.2, LE, built May 13 2024 21:35:11 (static)
+
+: rs-test   >R I I I R> ;    ok
+Stack<10> 
+1 2 3 rs-test . . . . . . 3 0 0 0 2 1    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Additionaly, using the Return Stack interactivelly, causes a segfault. The same example runs as expencted in gForth.
+.START_INFO_SECTION
+PForth V2.0.2, LE, built May 13 2024 21:35:11 (static)
+
+1 2 4 >R R> zsh: segmentation fault  ~/forth/pforth/platforms/unix/pforth_standalone
+.END_SECTION
