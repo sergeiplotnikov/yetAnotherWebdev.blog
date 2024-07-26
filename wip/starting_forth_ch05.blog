@@ -1,0 +1,579 @@
+.PAGE_LAYOUT
+"yet_another_webdev" "blog" "" "TOOLSVERSIONPLACEHOLDER" "PUBLISH_DATE"
+.PROJECT_TITLE
+"PROJECTPLACEHOLDER"
+.POST_TITLE
+"POSTPLACEHOLDER"
+.POST_DESCRIPTION
+"DESCRIPTIONPLACEHOLDER"
+.HEADER_BODY_SEPARATOR
+.PARAGRAPH
+In this chapter we'll introduce a new batch of atithmetic operators. Along the way we'll tackle the problem of handling decimal points using only whole-number arithmetic.
+.HEADER_PRIMARY
+Quickie Operators
+.START_INFO_SECTION
+1+         (n -- n+1)      Adds one.                      pronounced "one-plus"
+
+1-         (n -- n-1)      Subtracts one.                 pronounced "one-minus"
+
+2+         (n -- n+2)      Adds two.                      pronounced "two-plus"
+
+2-         (n -- n-2)      Subtracts two.                 pronounced "two-minus"
+
+2*         (n -- n*2)      Multiplies by two
+                           (arithmetic left shift).       pronounced "two-star"
+
+2/         (n -- n/2)      Divides by two
+                           (arithmetic right shift).      pronounced "two-slash"
+.END_SECTION
+.PARAGRAPH
+the reason they have been defined as words in your FORTH system is that they are used very frequently in most applications and even in the FORTH system itself.
+.PARAGRAPH
+There are three reasons to use
+.START_INFO_HIGHLIGHT
+1+
+.END_HIGHLIGHT
+, instead of one and
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+, in your new definitions. First, you save a little dictionary space each itme. Second, since such words have been specifically defined in the "machine language" of each individual type of computer to take advantages of the computer's architecture, they execute faster than one and 
+.START_INFO_HIGHLIGHT
++
+.END_HIGHLIGHT
+.DOT Finnaly, you save a little time during compilation.
+.HEADER_PRIMARY
+Miscellaneous Math Operators
+.PARAGRAPH
+Here's a table of four miscellaneous math operators. LIke the quickie operators, these functions should be obvious from their names:
+.START_INFO_SECTION
+ABS     (n -- |n|)         Returns the absolute value.     pronounced "absolute"
+
+NEGATE  (n -- -n)          Changes the sign.               pronounced "negate"
+
+MIN     (n1 n2 -- n-min)   Returns the minimum.            pronounced "min"
+
+MAX     (n1 n2 -- n-max)   Returns the maximum.            pronounced "max"
+.END_SECTION
+.HEADER_SECONDARY
+ABS example
+.PARAGRAPH
+Write a definition which computes the difference between two numbers, regardless of the order in which the numbers are entered:
+.START_INFO_SECTION
+: DIFFERENCE   - ABS ;
+52 37 DIFFERENCE .   15 ok
+37 52 DIFFERENCE .   15 ok
+.END_SECTION
+.HEADER_SECONDARY
+MIN example
+.PARAGRAPH
+Write a difenition which computes the comission that a furniture salesperson will receive if they've been promised $50 or 1/10 of the sale price, whichever is less, on each sale they make.
+.START_INFO_SECTION
+: COMMISSION   10 / 50 MIN ;
+600 COMMISSION .   50 ok
+450 COMMISSION .   45 ok
+50 COMMISSION .   5 ok
+.END_SECTION
+.HEADER_PRIMARY
+The Return Stack
+.PARAGRAPH
+Up till now we've been talking about "the stack" as if there were only one. But in fact there are two: the "parameter stack" and the "return stack". The parameter stack is used more often by FORTH programmers, so it's simply called "the stack" unless there is doubt.
+.PARAGRAPH
+As you've seen, the parmeter stack holds parameters (or "arguments") that are being passed from word to word. The return stack, however, holds any number of "pointers" which the FORTH system uses to make its merry way through the maze of words that are executing other words.
+.PARAGRAPH
+You the user can employ the return stack as a kind of "extra hands" to hold values temporarily while you perform operations on the parameter stack.
+.PARAGRAPH
+The return stack is a last-in first-out structure, just like the parameter stack, so it can hold many values. But there's the catch: whatever you put on the return stack you must remove again before you get to the end of the definition (the semicolon), because at that point the FORTH system will expect to find a pointer there. You cannot use the return stack to pass parameters from one word to another.
+.PARAGRAPH
+The following table lists the words associated with the return stack. Remember, the stack notation refers to the parameter stack.
+.START_INFO_SECTION
+>R     (n -- )     Takes a value off the parameter          pronounced "to-R"
+                   stack and pushes it onto the
+                   return stack.
+
+R>     ( -- n)     Takes a value off the return             pronounced "from-R"
+                   stack and pushes it onto the
+                   parameter stack.
+
+I      ( -- n)     Copies the top of the return             pronounced "I"
+                   stack without affecting it.
+
+I'     ( -- n)     Copies the second item of the return     pronounced "I-prime"
+                   stack without affecting it.
+
+J      ( -- n)     Copies the third item of the return      pronounced "J"
+                   stack without affecting it.
+.END_SECTION
+.PARAGRAPH
+The words
+.START_INFO_HIGHLIGHT
+>R
+.END_HIGHLIGHT
+and
+.START_INFO_HIGHLIGHT
+R>
+.END_HIGHLIGHT
+transfer a value to and from the return stack, respectively:
+.START_INFO_SECTION
+PForth V2.0.1, LE/64, built Mar  9 2023 12:08:29 (static)
+
+: EXAMPLE   >R SWAP R> ;    ok
+Stack<10> 
+2 3 1 EXAMPLE    ok
+Stack<10> 3 2 1 
+.END_SECTION
+.PARAGRAPH
+Each
+.START_INFO_HIGHLIGHT
+>R
+.END_HIGHLIGHT
+and its corresponding
+.START_INFO_HIGHLIGHT
+R>
+.END_HIGHLIGHT
+must be used together in the same definition or, if executed interactively, in the same line of input (before you hit the RETURN key).
+.PARAGRAPH
+The other three words --
+.START_INFO_HIGHLIGHT
+I
+.END_HIGHLIGHT
+,
+.START_INFO_HIGHLIGHT
+I'
+.END_HIGHLIGHT
+, and
+.START_INFO_HIGHLIGHT
+J
+.END_HIGHLIGHT
+-- only copy values from the return stack without removing them. Thus the phrase
+.START_INFO_HIGHLIGHT
+>R SWAP I
+.END_HIGHLIGHT
+would produce the same result as far as it goes, but unless you clean up your trash before the next semicolon (or return key), you will crash the system.
+.PARAGRAPH
+To see how
+.START_INFO_HIGHLIGHT
+>R
+.END_HIGHLIGHT
+,
+.START_INFO_HIGHLIGHT
+R>
+.END_HIGHLIGHT
+, and
+.START_INFO_HIGHLIGHT
+I
+.END_HIGHLIGHT
+might be used, imagine you are so unlucky as to need to solve the equation:
+.START_INFO_HIGHLIGHT
+ax^2 + bx + c
+.END_HIGHLIGHT
+with all four values on the stack in the following order:
+.START_INFO_HIGHLIGHT
+(a b c x -- )
+.END_HIGHLIGHT
+(remember to factor out first).
+.START_INFO_SECTION
+                    Parameter               Return
+Operator            Stack                   Stack
+--------------------------------------------------
+                    a b c x
+
+>R                  a b c                   x
+
+SWAP                a c b                   x
+
+ROT                 c b a                   x
+
+I                   c b a x                 x
+
+*                   c b ax                  x
+
++                   c (ax + b)              x
+
+R>                  c (ax + b) x
+
+*                   c x(ax + b) 
+
++                   x(ax + b) + c
+.END_SECTION
+.START_INFO_SECTION
+: QUADRATIC (a b c x -- n)
+    >R SWAP ROT I * + R> * + ;
+
+2 7 9 3 QUADRATIC   48 ok
+.END_SECTION
+.HEADER_SECONDARY
+Using the Return Stack in pForth
+.PARAGRAPH
+Below is the result of running the example above in pForth:
+.START_INFO_SECTION
+PForth V2.0.2, LE, built May 13 2024 21:35:11 (static)
+
+: QUADRATIC   >R SWAP ROT I * + R> * + ;    ok
+Stack<10> 
+2 7 9 3 QUADRATIC CR . 
+30    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+30 is not the correct answer. Below I define the same
+.START_INFO_HIGHLIGHT
+rs-test
+.END_HIGHLIGHT
+word in pForth and gForth. In gForth the
+.START_INFO_HIGHLIGHT
+rs-test
+.END_HIGHLIGHT
+word has the expected effect on the parameter stack.
+.START_INFO_SECTION
+Gforth 0.7.3, Copyright (C) 1995-2008 Free Software Foundation, Inc.
+Gforth comes with ABSOLUTELY NO WARRANTY; for details type `license'
+Type `bye' to exit
+: rs-test   >R I I I R> ;  ok
+1 2 3 rs-test . . . . . . 3 3 3 3 2 1  ok
+.END_SECTION
+.PARAGRAPH
+But in pForth it appears that the word
+.START_INFO_HIGHLIGHT
+I
+.END_HIGHLIGHT
+pushes 0 onto the parameter stack instead of the parameter that was pushed onto the Return Stack by
+.START_INFO_HIGHLIGHT
+>R
+.END_HIGHLIGHT
+.START_INFO_SECTION
+PForth V2.0.2, LE, built May 13 2024 21:35:11 (static)
+
+: rs-test   >R I I I R> ;    ok
+Stack<10> 
+1 2 3 rs-test . . . . . . 3 0 0 0 2 1    ok
+Stack<10> 
+.END_SECTION
+.PARAGRAPH
+Additionaly, using the Return Stack interactivelly, causes a segfault. The same example runs as expencted in gForth.
+.START_TERMINAL_SECTION
+$ Pf
+PForth V2.0.2, LE, built Aug 29 2024 22:06:02 (static)
+
+1 2 3 >R R> Segmentation fault (core dumped)
+$ 
+.END_SECTION
+.HEADER_PRIMARY
+An Introduction to Floating-Point Arithmetics
+.PARAGRAPH
+"Floating point representation" is a way to store numbers in computer memory using a form of scientific notation. In such a representation the number 12 million could be stored as the number 12 and 6 since since 12 * 10^6 = 12,000,000.
+.PARAGRAPH
+This allows the computer to store an enormous range of numbers, from atomic to astronomic, using two relatively small numbers.
+.PARAGRAPH
+In a Fixed-point representation, numbers are stored without storing the position of the decimal point for each number. For example, in a program working with dollars and cents, all values can be stored in cents. The program, rather then each individual number, can remember the location of the decimal point.
+.PARAGRAPH
+Lets compare fixed-point and floating-point representations of dollar-and-cents values:
+.START_INFO_SECTION
+     Real-world       Fixed-point            Floating-point
+     Value            Representation         Representation
+------------------------------------------------------------
+        1.23               123                 123(-2)
+       10.98              1098                1098(-2)
+      100.00             10000                   1(2)
+       58.60              5660                 586(-1)
+.END_SECTION
+.PARAGRAPH
+As you can see, with fixed-point all the values must conform to the same "scale". The decimal points must be properly "aligned" (2 places from the right) even though they are not actually represented. With fixed-point, the computer treats all numbers as though they were integers. If the program needs to print out an answer, however, it simply inserts the decimal point two places in from the right before it sends the number to the terminal or printer.
+.HEADER_SECONDARY
+Why FORTH Programmers Advocate Fixed-Point
+.PARAGRAPH
+The main argument for using a floating-point arithmetic is that the location of the decimal point is stored as part of the number in memory. This makes it easier to translate mathematical equations into program code.
+.PARAGRAPH
+The typical FORTH programmer, however, strives to maximize the efficiency of the program so it runs as fast as possible, while using as little memory as possible. Also, some microcomputers don't support floating-point.
+.PARAGRAPH
+Here are some of the reasons you might prefer to have floating-point capability:
+.LIST_ITEM_ORDERED
+You want to use your comoputer like a calculator on floating-point data.
+.LIST_ITEM_ORDERED
+You value the initial programming time more highly than the execution time spent every time the calculation is performed.
+.LIST_ITEM_ORDERED
+You want a number to be able to describe a very large dynamic range (greater than -2 billion to +2 billion)
+.LIST_ITEM_ORDERED
+Your system includes a discrete hardware floating-point multiply (a separate "chip whose only job is to perform floating-point multiplication at super high speeds).
+.PARAGRAPH
+A mainstream FORTH philosophy is: "In most cases, you don't need to pay for floating-point". FORTH backs its philosophy by supplying the programmer with a unique set of high-level commands called "scaling operators".
+.HEADER_SECONDARY
+Star-slash the Scalar
+.PARAGRAPH
+Here's a math operator that is as useful as it is unusual: 
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+.START_INFO_SECTION
+  */     (n1 n2 n3 -- n-result)   Multiplies, then divides      pronounced:
+                                  (n1*n2/n3). Uses a 32-bit     start-slash
+                                  intermediate result.
+.END_SECTION
+.PARAGRAPH
+As the name implies,
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+performs multiplication, then division. For example, let's say that the stack contains these numbers:
+.START_INFO_HIGHLIGHT
+(225 32 100 -- )
+.END_HIGHLIGHT
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+will first multiply 225 by 32, then divide the result by 100.
+.PARAGRAPH
+This operation is particularly useful as an integer-arithmetic solution to problems such as percentage calculations.
+.PARAGRAPH
+For example, you could define the word
+.START_INFO_HIGHLIGHT
+%
+.END_HIGHLIGHT
+like this:
+.START_INFO_HIGHLIGHT
+: %   100 */ ;
+.END_HIGHLIGHT
+so that by entering the number 225 and then the phrase
+.START_INFO_HIGHLIGHT
+32 %
+.END_HIGHLIGHT
+you'd end up with 32% of 225 on the stack.
+.PARAGRAPH
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+is not just a
+.START_INFO_HIGHLIGHT
+*
+.END_HIGHLIGHT
+and a
+.START_INFO_HIGHLIGHT
+/
+.END_HIGHLIGHT
+thrown together, though. It uses a "double-length intermidiate result". What does that mean you ask? Say you want to compute 34% of 2000. Remember that single-percision operators, like
+.START_INFO_HIGHLIGHT
+*
+.END_HIGHLIGHT
+and
+.START_INFO_HIGHLIGHT
+/
+.END_HIGHLIGHT
+, only work with arguments and results within the range -32768 to +32767. If youwere to enter the phrase:
+.START_INFO_HIGHLIGHT
+2000 34 * 100 /
+.END_HIGHLIGHT
+you'd get an incorrect result, because the "intermediate result" (in this case, the result of multiplication) exceeds 32767. 
+.PARAGRAPH
+But
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+uses a double-length intermidiate result, so that its range will be large enough to hold the result of any two single-length numbers multiplied together. The phrase:
+.START_INFO_HIGHLIGHT
+2000 34 100 */
+.END_HIGHLIGHT
+returns the corret answer because the end result falls within the range of single-length numbers.
+.PARAGRAPH
+The previous example brings up another question: how to round off.
+.START_INFO_SECTION
+     32% of:                     Result:
+-----------------------------------------------------------------
+     225 = 72.00                 72 -- exactly correct
+     226 = 72.32                 72 -- correct rounded down (truncated)
+     227 = 72.64                 72 -- truncated, not rounded
+.END_SECTION
+.PARAGRAPH
+There is a way, however, with any decimal value of 0.5 or higher, to round upwards to the next whole number. We could define the word
+.START_INFO_HIGHLIGHT
+: R%   10 */ 5 + 10 / ;
+.END_HIGHLIGHT
+so that the pharase:
+.START_INFO_HIGHLIGHT
+227 32 R% .
+.END_HIGHLIGHT
+will give you 73, which is correctly rounded up. Notice that we first devide by 10 rather by 100. This gives up an extra decimal place to work with, to which we can add 5. The final division by 10 sets the value to its rightful decimal position.
+.PARAGRAPH
+A disadvantage to this method of rounding is that you lose one decimal place of range in the final result; that is, it can only go as high as 3,276 rather than 32,767. But if that's a problem, you can always use double-length numbers.
+A faster definition for the word
+.START_INFO_HIGHLIGHT
+R%
+.END_HIGHLIGHT
+is
+.START_INFO_HIGHLIGHT
+: R%   50 */ 1+ 2/ ;
+.END_HIGHLIGHT
+.HEADER_SECONDARY
+Some Perspective on Scaling
+.PARAGRAPH
+Take the simple problem of computing two-thirds of 171. Basically, there are two ways to go about it.
+.LIST_ITEM_ORDERED
+We could compute the value of the fraction 2/3 by dividing 2 by 3 to obtain the repeating decimal 0.666666. Then we could multiply this value by 171. The result would by 113.999999, which is not quite right but which could be rounded up to 114.
+.LIST_ITEM_ORDERED
+We could multiply 171 by 2 to get 342. Then we could divide by 3 to get 114.
+.PARAGRAPH
+Notice that the second way is simpler and more accurate.
+.PARAGRAPH
+Most computer laguages support the first way. "You can't have a fraction like two-thirds hanging around inside a computer" it is believed, "you must express it as 0.666666".
+.PARAGRAPH
+FORTH supports the second way.
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+lets you have a fraction like two-thirds, as in:
+.START_INFO_HIGHLIGHT
+171 2 3 */
+.END_HIGHLIGHT
+.PARAGRAPH
+Now that we have a little perspective, let's take a slightly more complicated example: We want to distribute $150 in proportion to two value:
+.START_INFO_SECTION
+           7,105           ?
+           5,145           ?
+          ------         ---
+          12,250         150
+.END_SECTION
+.PARAGRAPH
+Again, we could solve the problem this way:
+.START_INFO_SECTION
+          (7,105 / 12,250) x 150
+   and
+          (5,145 / 12,250) x 150
+.END_SECTION
+.PARAGRAPH
+but for greater accuracy; we should say:
+.START_INFO_SECTION
+          (7,105 * 150) / 12,250
+   and
+          (5,145 * 150) / 12,250
+.END_SECTION
+.PARAGRAPH
+which in FORTH is writtern:
+.START_INFO_SECTION
+          7105 150 12250 */ .
+   and
+          5145 150 12250 */ .
+.END_SECTION
+.PARAGRAPH
+Another scaling operator in FORTH is
+.START_INFO_HIGHLIGHT
+*/MOD
+.END_HIGHLIGHT
+:
+.START_INFO_SECTION
+   */MOD    (u1 u2 u3 -- u-rem u-result)   Multiplies, then divides (u1*u2/u3).
+                                           Returns the remainder and the
+                                           quotiend. Uses a double-length
+                                           in intermidiate result.
+.END_SECTION
+.HEADER_SECONDARY
+Using Rational Approximations
+.PARAGRAPH
+So far we've only used scaling operations to work on rational numbers. They can also be used on rational approximations of irrational constants, such as pi or the square root of 2. For example, the real value of pi is 3.14159265358, etc. but to stay within the bounds of single-length arithmetic, we could write the phrase
+.START_INFO_HIGHLIGHT
+31416 10000 */
+.END_HIGHLIGHT
+and get a pretty good approximation.
+.PARAGRAPH
+Now we can write a definition to compute the area of a circle, given its radius. The value of the radius will be on the stack, so we
+.START_INFO_HIGHLIGHT
+DUP
+.END_HIGHLIGHT
+it and multiply it by itself, the star-slash the result:
+.START_INFO_HIGHLIGHT
+: PI   DUP * 31416 10000 */ ;
+.END_HIGHLIGHT
+.PARAGRAPH
+But for even more accuracy, we might wonder if there is a pair of integers besides 31416 and 10000 that is a close approximation to pi. Suprisingly, there is. The fraction 355/113 . Its accuracy is more than 6 places beyond the decimal, as opposed to the less than four places with 31416. Our new and improved definition is:
+.START_INFO_HIGHLIGHT
+: PI   DUP * 355 113 */ ;
+.END_HIGHLIGHT
+It turns out that you can approximate nearly any constant by many different pairs of integers, all nubers less than 32768, with an error of less than 10^-8:
+.START_INFO_SECTION
+   Number                              Approximation    Error
+   ------------------------------      -------------    -----------
+                   pi = 3.141 ...        355/  113      8.5 x 10^-8
+              2^(1/2) = 1.414 ...      19601/13860      1.5 x 10^-9
+              3^(1/2) = 1.732 ...      18817/10864      1.1 x 10^-9
+                    e = 2.718 ...      28667/10546      5.5 x 10^-9
+             10^(1/2) = 3.162 ...      22936/ 7253      5.7 x 10^-9
+             2^(1/12) = 1.059 ...      26797/25293      1.0 x 10^-9
+       log10 2/1.6384 = 0.183 ...       2040/11103      1.1 x 10^-8
+           ln2/16.384 = 0.042 ...        485/11464      1.0 x 10^-7
+    .001° /22-bit rev = 0.858 ...      18118/21109      1.4 x 10^-9
+   arc-sec/22-bit rev = 0.309 ...       9118/29509      1.0 x 10^-9
+                    c = 2.9979248      24559/ 8192      1.6 x 10^-9
+.END_SECTION
+.HEADER_PRIMARY
+List of FORTH words covered in this chapter:
+.START_INFO_SECTION
+1+        (n -- n+1)                    Adds 1.
+
+1-        (n -- n-1)                    Subtracts 1.
+
+2+        (n -- n+2)                    Adds 2.
+
+2-        (n -- n-2)                    Subtracts 2.
+
+2*        (n -- n*2)                    Multiplies by 2 (arithmetic left shift).
+
+2/        (n -- n/2)                    Divides by 2 (arithmetic right shift).
+
+ABS       (n -- |n|)                    Returns the absolute value.
+
+NEGATE    (n -- -n)                     Changes the sign.
+
+MIN       (n1 n2 -- n-min)              Returns the minimum.
+
+MAX       (n1 n2 -- n-max)              Returns the maximum.
+
+>R        (n -- )                       Takes a value off the parameter stack
+                                        and pushes it onto the return stack.
+
+R>        ( -- n)                       Takes value of the return stack and
+                                        pushes it onto the parameter stack.
+
+I         ( -- n)                       Copies the top of the return stack
+                                        without affecting it.
+
+I'        ( -- n)                       Copies the 2nd item of the return stack
+                                        withoud affecting it.
+
+J         ( -- n)                       Copies the 3rd item of the return stack
+                                        without affecting it.
+
+*/        (n1 n2 n3 -- n-result)        Multiplies, then divides (u1*n2/n3).
+                                        Uses a 32-bit intermediate result.
+
+*/MOD     (n1 n2 n3 -- n-rem n-result)  Multiplies, then divides (u1*u2/u3).
+                                        Returns the remainder and the
+                                        quotient. Uses a double-length
+                                        intermidiate result.
+.END_SECTION
+.HEADER_PRIMARY
+Review of Terms
+.HEADER_SECONDARY
+Double-length intermediate result
+.PARAGRAPH
+a double-lenght value which is created temporarily by a two-part operator, such as
+.START_INFO_HIGHLIGHT
+*/
+.END_HIGHLIGHT
+, so that the "intermediate result" (the result of the first operation) is allowed to exceed the range of a single-length number, event though the initial arguments and the final result are not.
+.HEADER_SECONDARY
+Fixed-point arithmetic
+.PARAGRAPH
+arithmetic which deals with numbers which do not themselves indicate the location of their decimal points. Instead, for any group of numbers, the program assumes the location of the decimal point or keeps the decimal location for all such numbers as a separate number.
+.HEADER_SECONDARY
+Floating-point arithmetic
+arithmetic which deals with numbers which themselves indicate the location of their decimal points. The program must be able to interpret the true value of each individual number before any arithmetic can be performed.
+.HEADER_SECONDARY
+Parameter Stack
+.PARAGRAPH
+in FORTH, the region of memory which serves as common ground between various operations to pass arguments (numbers, flags, or whatever) from one operation to another.
+.HEADER_SECONDARY
+Return Stack
+.PARAGRAPH
+in FORTH, a region of memory distinc from the parameter stack which the FORTH system uses to hold "return addresses" (to be discussed in Chap. 9), among other things. The user may keep values on the return stack temporarily, under certain conditions.
+.HEADER_SECONDARY
+Scaling
+.PARAGRAPH
+the process of multiplying (or dividing) a number by a ratio. Also refers to the process of multiplying (or dividing) a number by a power of ten so that all values in a set of data may be represented as integers with the decimal point assumed to be in the same place for all values.
